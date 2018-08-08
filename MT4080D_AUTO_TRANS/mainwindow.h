@@ -3,14 +3,14 @@
 
 #include <QListWidget>
 #include <QMainWindow>
-#include <QThread>
-#include "mt4080.h"
-#include <QSound>
 #include <QMutex>
-#include <QtCharts/QChartGlobal>
+#include <QSound>
+#include <QThread>
 #include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QValueAxis>
 #include <QtCharts/QBarSet>
+#include <QtCharts/QChartGlobal>
+#include <QtCharts/QValueAxis>
+#include <mt4080.h>
 
 namespace Ui {
 class MainWindow;

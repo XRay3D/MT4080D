@@ -1,0 +1,33 @@
+#ifndef MYPROTOKOL_H
+#define MYPROTOKOL_H
+
+#include <QByteArray>
+#include <stdint.h>
+
+#pragma pack(push, 1)
+typedef struct Parcel_t {
+    uint16_t Start;
+    uint8_t Len;
+    uint8_t Cmd;
+    uint8_t Data[32];
+} Parcel_t;
+#pragma pack(pop)
+
+//#define A
+class MyProtokol {
+public:
+    enum { POLYNOMIAL = 0x1D }; // x^8 + x^4 + x^3 + x^2 + 1
+#ifndef A
+    QByteArray Parcel(uint8_t cmd, uint8_t* pData, uint8_t Len);
+    QByteArray Parcel(uint8_t cmd, const QByteArray& data);
+    QByteArray Parcel(uint8_t cmd);
+#else
+    QByteArray Parcel(uint8_t cmd, uint8_t* pData, uint8_t Len, uint8_t cannel = 0);
+    QByteArray Parcel(uint8_t cmd, const QByteArray& data, uint8_t cannel = 0);
+    QByteArray Parcel(uint8_t cmd, uint8_t cannel = 0);
+#endif
+    bool CheckData(const QByteArray& data);
+    uint8_t CalcCrc(const QByteArray& data);
+};
+
+#endif // MYPROTOKOL_H

@@ -1,8 +1,10 @@
 #include "mainwindow.h"
+#include "model.h"
 #include "ui_mainwindow.h"
 
 #include <QClipboard>
 #include <QContextMenuEvent>
+#include <QDebug>
 #include <QMenu>
 #include <QMessageBox>
 #include <QSerialPortInfo>
@@ -10,7 +12,9 @@
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
 #include <QtCharts/QStackedBarSeries>
-#include <qt_windows.h>
+//#include <qt_windows.h>
+#include <QHeaderView>
+#include <QScrollBar>
 
 using namespace QtCharts;
 
@@ -25,10 +29,16 @@ MainWindow::MainWindow(QWidget* parent)
 {
     ui->setupUi(this);
 
+    ui->tableView->setModel(model = new Model(border.min, border.max));
+
     //    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
-    foreach (QSerialPortInfo info, QSerialPortInfo::availablePorts()) {
-        ui->comboBoxMt4080->addItem(info.portName());
+    ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
+        if (info.manufacturer().contains("Silicon"))
+            ui->comboBoxMt4080->addItem(info.portName());
     }
 
     CreateChart();
@@ -58,10 +68,12 @@ void MainWindow::Display(const MT4080::Display_t& val)
     ui->lineEdit_3->setText(val.firest.unit);
 
     ui->lineEdit_4->setText(val.secopnd.function);
+
     if (ui->lineEdit_5->minimum() > val.secopnd.value)
         ui->lineEdit_5->setMinimum(val.secopnd.value);
     if (ui->lineEdit_5->maximum() < val.secopnd.value)
         ui->lineEdit_5->setMaximum(val.secopnd.value);
+
     ui->lineEdit_5->setValue(val.secopnd.value);
     ui->lineEdit_6->setText(val.secopnd.unit);
 
@@ -78,7 +90,7 @@ void MainWindow::writeSettings()
     settings.setValue("size", size());
     settings.setValue("pos", pos());
 
-    settings.setValue("WindowState", (int)windowState());
+    settings.setValue("WindowState", static_cast<int>(windowState()));
 
     settings.setValue("comboBoxMt4080", ui->comboBoxMt4080->currentIndex());
 
@@ -94,50 +106,53 @@ void MainWindow::writeSettings()
     settings.endGroup();
 }
 
-void MainWindow::UpdateChart(double val)
+void MainWindow::UpdateChart()
 {
-    if (min > val)
-        min = val;
-    if (max < val)
-        max = val;
-    if (values.size() > 1) {
+    if (barMin > values.last())
+        barMin = values.last();
+    if (barMax < values.last())
+        barMax = values.last();
 
-        double mid = max - min;
+    if (values.size() < 2)
+        return;
 
-        int bar[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        const double k = 0.11111111111111111111111111111111111111;
-        const double step[]{
-            min,
-            min + mid * 1 * k,
-            min + mid * 2 * k,
-            min + mid * 3 * k,
-            min + mid * 4 * k,
-            min + mid * 5 * k,
-            min + mid * 6 * k,
-            min + mid * 7 * k,
-            min + mid * 8 * k,
-            max
-        };
+    double mid = barMax - barMin;
 
-        for (const double value : values) {
-            for (int j = 0; j < 9; ++j) {
-                if (step[j] <= value && value <= step[j + 1]) {
-                    ++bar[j];
-                    break;
-                }
+    int bar[9]{}; // = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    const double k = 0.11111111111111111111111111111111111111;
+
+    const double ranges[]{
+        barMin + mid * 0 * k,
+        barMin + mid * 1 * k,
+        barMin + mid * 2 * k,
+        barMin + mid * 3 * k,
+        barMin + mid * 4 * k,
+        barMin + mid * 5 * k,
+        barMin + mid * 6 * k,
+        barMin + mid * 7 * k,
+        barMin + mid * 8 * k,
+        barMin + mid * 9 * k,
+    };
+
+    for (double v : values) {
+        for (int j = 0; j < 9; ++j) {
+            if (ranges[j] <= v && v <= ranges[j + 1]) {
+                ++bar[j];
+                break;
             }
         }
-
-        int maxRange = 0;
-        QStringList categories;
-        for (int j = 0; j < 9; ++j) {
-            set->replace(j, bar[j]);
-            maxRange = qMax(maxRange, bar[j]);
-            categories.append(QString("%1-%2").arg(step[j], 0, 'g').arg(step[j + 1], 0, 'g'));
-        }
-        xAxis->setCategories(categories);
-        yAxis->setRange(0, maxRange);
     }
+
+    int maxRange = 0;
+    QStringList categories;
+    for (int j = 0; j < 9; ++j) {
+        set->replace(j, bar[j]);
+        maxRange = qMax(maxRange, bar[j]);
+        categories.append(QString("%1-%2").arg(ranges[j], 0, 'g').arg(ranges[j + 1], 0, 'g'));
+    }
+    xAxis->setCategories(categories);
+    yAxis->setRange(0, maxRange);
 }
 
 void MainWindow::readSettings()
@@ -145,10 +160,11 @@ void MainWindow::readSettings()
     QSettings settings;
 
     settings.beginGroup("MainWindow");
+
     resize(settings.value("size", QSize(400, 400)).toSize());
     move(settings.value("pos", QPoint(200, 200)).toPoint());
 
-    setWindowState((Qt::WindowState)settings.value("WindowState").toInt());
+    setWindowState(static_cast<Qt::WindowState>(settings.value("WindowState").toInt()));
 
     ui->comboBoxMt4080->setCurrentIndex(settings.value("comboBoxMt4080").toInt());
     ui->groupBox_mt4080->clicked(settings.value("groupBox_mt4080").toBool());
@@ -163,89 +179,67 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
-void MainWindow::MessageMeasureEnded()
-{
-    QMessageBox::information(this, "Сообщение", "Измерение закончилось!", tr("Хорошо"));
-}
-
-void MainWindow::MessageErrorRelaySwitch()
-{
-    QMessageBox::critical(this, "Ошибка!", "Не удалось переключить Коммутатор!", tr("Плохо!"));
-}
-
-void MainWindow::MessageMoveBoard(int val)
-{
-    QMessageBox::information(this, "Внимание", QString("Поставите плату стороной %1").arg(val == 1 ? "1-29" : "30-58"), tr("Хорошо"));
-}
-
 void MainWindow::ConnectSignals()
 {
     connect(&mt4080Thread, &QThread::finished, mt4080, &QObject::deleteLater);
     connect(mt4080, &MT4080::Display, this, &MainWindow::Display);
     connect(mt4080, &MT4080::Primary, this, &MainWindow::Primary);
 
-    typedef void (QDoubleSpinBox::*func)(double);
+    connect(ui->dsbMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
+    connect(ui->dsbMaxErr, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
+    connect(ui->dsbMin, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
+    connect(ui->dsbMinErr, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
 
-    connect(ui->dsbMax, static_cast<func>(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
-    connect(ui->dsbMaxErr, static_cast<func>(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
-    connect(ui->dsbMin, static_cast<func>(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
-    connect(ui->dsbMinErr, static_cast<func>(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
+    connect(ui->groupBox_mt4080, &QGroupBox::clicked, [=](bool checked) {
+        ui->lineEdit_1->setEnabled(true);
+        ui->lineEdit_2->setEnabled(true);
+        ui->lineEdit_3->setEnabled(true);
+        ui->lineEdit_4->setVisible(checked);
+        ui->lineEdit_5->setVisible(checked);
+        ui->lineEdit_6->setVisible(checked);
+        ui->lineEdit_7->setVisible(checked);
+        ui->lineEdit_8->setVisible(checked);
+        ui->lineEdit_9->setVisible(checked);
+    });
 
-    connect(ui->groupBox_mt4080, &QGroupBox::clicked,
-        [=](bool checked) {
-            ui->groupBox_mt4080->setChecked(checked);
-            ui->lineEdit_1->setEnabled(true);
-            ui->lineEdit_2->setEnabled(true);
-            ui->lineEdit_3->setEnabled(true);
-            ui->lineEdit_4->setVisible(checked);
-            ui->lineEdit_5->setVisible(checked);
-            ui->lineEdit_6->setVisible(checked);
-            ui->lineEdit_7->setVisible(checked);
-            ui->lineEdit_8->setVisible(checked);
-            ui->lineEdit_9->setVisible(checked);
-        });
+    connect(ui->groupBoxSettings, &QGroupBox::clicked, [=](bool checked) {
+        ui->dsbMax->setVisible(checked);
+        ui->dsbMaxErr->setVisible(checked);
+        ui->dsbMin->setVisible(checked);
+        ui->dsbMinErr->setVisible(checked);
+        ui->lbSettings_1->setVisible(checked);
+        ui->lbSettings_2->setVisible(checked);
+        ui->lbSettings_3->setVisible(checked);
+        ui->lbSettings_4->setVisible(checked);
+        ui->label->setVisible(checked);
+        ui->sbScale->setVisible(checked);
+        if (checked)
+            ui->groupBoxSettings->layout()->setMargin(6);
+        else
+            ui->groupBoxSettings->layout()->setMargin(3);
+    });
 
-    connect(ui->groupBoxSettings, &QGroupBox::clicked,
-        [=](bool checked) {
-            ui->groupBoxSettings->setChecked(checked);
-            ui->dsbMax->setVisible(checked);
-            ui->dsbMaxErr->setVisible(checked);
-            ui->dsbMin->setVisible(checked);
-            ui->dsbMinErr->setVisible(checked);
-            ui->lbSettings_1->setVisible(checked);
-            ui->lbSettings_2->setVisible(checked);
-            ui->lbSettings_3->setVisible(checked);
-            ui->lbSettings_4->setVisible(checked);
-            ui->label->setVisible(checked);
-            ui->sbScale->setVisible(checked);
-            if (checked)
-                ui->groupBoxSettings->layout()->setMargin(6);
-            else
-                ui->groupBoxSettings->layout()->setMargin(0);
-        });
-
-    connect(ui->groupBoxConnection, &QGroupBox::clicked,
-        [=](bool checked) {
-            ui->label_5->setVisible(checked);
-            ui->comboBoxMt4080->setVisible(checked);
-            ui->pushButton->setVisible(checked);
-            ui->pushButtonStartStopMeas->setVisible(checked);
-            if (checked) {
-                ui->gridLayoutConnection->setMargin(6);
-                ui->groupBoxConnection->setTitle("Настройка связи:");
-            } else {
-                ui->gridLayoutConnection->setMargin(3);
-                ui->groupBoxConnection->setTitle(QString("Настройка связи: (%1)").arg(ui->pushButton->isChecked() ? "Идёт опрос" : "Опрос остановлен"));
-            }
-        });
+    connect(ui->groupBoxConnection, &QGroupBox::clicked, [=](bool checked) {
+        ui->checkBox->setVisible(checked);
+        ui->comboBoxMt4080->setVisible(checked);
+        ui->pushButton->setVisible(checked);
+        ui->pushButtonStartStopMeas->setVisible(checked);
+        if (checked) {
+            ui->gridLayoutConnection->setMargin(6);
+            ui->groupBoxConnection->setTitle("Настройка связи:");
+        } else {
+            ui->gridLayoutConnection->setMargin(3);
+            ui->groupBoxConnection->setTitle(QString("Настройка связи: (%1)").arg(ui->pushButton->isChecked() ? "Идёт опрос" : "Опрос остановлен"));
+        }
+    });
 
     connect(ui->pushButtonStartStopMeas, &QPushButton::clicked,
         [=](bool checked) {
             if (ui->pushButton->isChecked()) {
                 ui->pushButtonStartStopMeas->setChecked(checked);
                 if (checked) {
-                    min = +std::numeric_limits<double>::max();
-                    max = -std::numeric_limits<double>::max();
+                    barMin = +std::numeric_limits<double>::max();
+                    barMax = -std::numeric_limits<double>::max();
                 } else {
                     checked = false;
                 }
@@ -262,9 +256,9 @@ void MainWindow::ConnectSignals()
             QMutexLocker locker(&mutex);
             reset();
             if (QMessageBox::question(this, "Сообщение", "pushButton_clearTable?") == QMessageBox::Yes) {
-                ui->listWidget->clear();
-                min = +std::numeric_limits<double>::max();
-                max = -std::numeric_limits<double>::max();
+                model->clear();
+                barMin = +std::numeric_limits<double>::max();
+                barMax = -std::numeric_limits<double>::max();
             }
             values.clear();
         });
@@ -289,14 +283,6 @@ void MainWindow::ConnectSignals()
 
 void MainWindow::CreateChart()
 {
-
-    yAxis = new QValueAxis; // Ось X
-    yAxis->setRange(0, 1); // Диапазон от 0 до времени которое соответстует SAMPLE_NUM точек
-
-    xAxis = new QBarCategoryAxis; // Ось Y
-    QStringList categories{ "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-    xAxis->append(categories);
-
     QChart* chart = new QChart();
     chart->setTitle("Bar chart");
     QStackedBarSeries* series = new QStackedBarSeries(chart);
@@ -304,9 +290,15 @@ void MainWindow::CreateChart()
     set->append(QList<qreal>{ 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     series->append(set);
     series->setBarWidth(1);
+
     chart->addSeries(series);
-    chart->setAxisX(xAxis, series); // Назначить ось xAxis, осью X для diagramA
-    chart->setAxisY(yAxis, series);
+    chart->createDefaultAxes();
+
+    yAxis = static_cast<QValueAxis*>(chart->axes(Qt::Vertical).first());
+    yAxis->setRange(0, 1); // Диапазон от 0 до времени которое соответстует SAMPLE_NUM точек
+    xAxis = static_cast<QBarCategoryAxis*>(chart->axes(Qt::Horizontal).first());
+    xAxis->append(QStringList{ "1", "2", "3", "4", "5", "6", "7", "8", "9" }); // Назначить ось xAxis, осью X для diagramA
+
     chart->setAnimationOptions(QChart::SeriesAnimations);
     chart->setMargins(QMargins(2, 2, 2, 2));
 
@@ -317,23 +309,11 @@ void MainWindow::CreateChart()
     ui->verticalLayout->addWidget(chartView);
 }
 
-void MainWindow::Copy()
-{
-    QString str;
-    if (ui->listWidget->count()) {
-        for (int row = 0; row < ui->listWidget->count(); ++row) {
-            str.append(ui->listWidget->item(row)->text());
-            str.append("\r\n");
-        }
-        QApplication::clipboard()->setText(str);
-    }
-}
-
 void MainWindow::contextMenuEvent(QContextMenuEvent* event)
 {
-    if (ui->listWidget->geometry().contains(event->pos())) {
+    if (model && ui->tableView->geometry().contains(event->pos()) && ui->tableView->model()->rowCount()) {
         QMenu menu(this);
-        menu.addAction(tr("Копировать данные"), [=]() { Copy(); }, QKeySequence::Copy);
+        menu.addAction(tr("Копировать данные"), [this]() { model->copy(); }, QKeySequence::Copy);
         menu.exec(event->globalPos());
     }
 }
@@ -347,6 +327,7 @@ void MainWindow::Primary(double val)
 
     if (ui->lineEdit_2->minimum() > val)
         ui->lineEdit_2->setMinimum(val);
+
     if (ui->lineEdit_2->maximum() < val)
         ui->lineEdit_2->setMaximum(val);
 
@@ -359,32 +340,24 @@ void MainWindow::Primary(double val)
                     mutex.unlock();
                     return;
                 }
-                QListWidgetItem* item;
                 if (border.fl == 5) {
-                    ui->listWidget->addItem("");
+                    model->addData(0.0, true);
                     if (border.max > val && val > border.min)
                         yes.play();
                     else
                         no.play();
                 }
-
                 value += val;
                 val = value / (border.fl - 4);
                 lastValue = val;
-
-                item = ui->listWidget->item(ui->listWidget->count() - 1);
-                item->setText(QString::number(val).replace('.', ','));
-                if (border.max > val && val > border.min)
-                    item->setBackgroundColor(QColor(128, 255, 128));
-                else
-                    item->setBackgroundColor(QColor(255, 128, 128));
-                ui->listWidget->scrollToItem(item);
+                model->addData(val);
+                ui->tableView->verticalScrollBar()->setValue(ui->tableView->verticalScrollBar()->maximum());
             }
         } else {
             value /= border.fl - 4;
-            if (value != 0) {
+            if (value != 0.0) {
                 values.append(value);
-                UpdateChart(value);
+                UpdateChart();
             }
             reset();
         }
@@ -395,7 +368,7 @@ void MainWindow::Primary(double val)
     else
         ui->lineEdit_2->setStyleSheet("QDoubleSpinBox{background-color:rgb(255, 128, 128)}");
 
-    timer.singleShot(50, Qt::CoarseTimer, [this]() { ui->lineEdit_2->setStyleSheet(""); });
+    timer.singleShot(50, Qt::CoarseTimer, [this] { ui->lineEdit_2->setStyleSheet(""); });
     mutex.unlock();
 }
 
@@ -413,4 +386,13 @@ void MainWindow::reset()
     value = 0.0;
     lastValue = 0.0;
     border.fl = 0;
+}
+
+void MainWindow::on_checkBox_clicked(bool checked)
+{
+    ui->comboBoxMt4080->clear();
+    for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
+        if (checked || info.manufacturer().contains("Silicon"))
+            ui->comboBoxMt4080->addItem(info.portName());
+    }
 }

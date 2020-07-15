@@ -1,10 +1,11 @@
 #ifndef MT4080_H
 #define MT4080_H
 
+#include <QMutex>
+#include <QSemaphore>
+#include <QSerialPort>
 #include <QTimer>
 #include <QWidget>
-#include <QSerialPort>
-#include <QMutex>
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLineEdit>
@@ -22,12 +23,12 @@ public:
     typedef struct Display_t {
         struct {
             QString function;
-            float value;
+            double value;
             QString unit;
         } firest;
         struct {
             QString function;
-            float value;
+            double value;
             QString unit;
         } secopnd;
         QString speed;
@@ -37,8 +38,8 @@ public:
 
 #pragma pack(push, 1)
     typedef struct RawDisplay_t {
-        unsigned start : 8;
-        unsigned type : 8;
+        uint8_t start;
+        uint8_t type;
         unsigned testFrequency : 3;
         unsigned testLevel : 2;
         unsigned measureSpeed : 1;
@@ -69,30 +70,50 @@ signals:
     void Display(const Display_t& val);
 
 private:
+    enum ParcelType {
+        MEASURE_PARAMETERS = 4, //  Параметры измерения
+        MEASURE_DCR = 1, //        Измерение соапротивления DCR
+        MEASURE_OTHER = 9, //      Другие измерерния
+    };
+
+    enum BeginParcel {
+        START_DATA = 2, //          Начало посылки
+        HEADER_PARAMETERS = START_DATA << 8 | MEASURE_PARAMETERS, //  Параметры измерения
+        HEADER_DCR = START_DATA << 8 | MEASURE_DCR, //              Измерение соапротивления DCR
+        HEADER_OTHER = START_DATA << 8 | MEASURE_OTHER, //          Другие измерерния
+    };
+
+    enum ParcelLength { // Длина посылки
+        PARAMETER_LENGTH = 6,
+        DCR_LENGTH = 7,
+        OTHER_LENGTH = 11
+    };
+
     bool CheckData(const QByteArray& data, int begin, int end);
     void ReadyRead();
-    void UpdateOtherDisp(const QByteArray& data);
+    void UpdateParameters(const QByteArray& data);
     void UpdateValues(const QByteArray& data);
 
-    QMutex mutex;
+    //    QMutex mutex;
+    //    QSemaphore semaphore;
     QByteArray m_data;
 
-    float Value1;
-    float Value2;
+    double Value1;
+    double Value2;
 
     QSerialPort port;
 
-    QStringList slFrequency;
-    QStringList slLevel;
-    QStringList slRelative;
-    QStringList slSpeed;
+    const QStringList slFrequency;
+    const QStringList slLevel;
+    const QStringList slRelative;
+    const QStringList slSpeed;
 
-    typedef QPair<QString, QString> Pair;
+    using Pair = QPair<QString, QString>;
 
-    QList<Pair> slCombDispParallelMode;
-    QList<Pair> slCombDispSerialMode;
-    QList<Pair> slMode1;
-    QList<Pair> slMode2;
+    const QList<Pair> slCombDispParallelMode;
+    const QList<Pair> slCombDispSerialMode;
+    const QList<Pair> slMode1;
+    const QList<Pair> slMode2;
 
     Display_t display;
     RawDisplay_t rawDisplay;

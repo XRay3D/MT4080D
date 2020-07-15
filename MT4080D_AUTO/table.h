@@ -6,11 +6,11 @@
 #include <QtWidgets>
 #include <QDebug>
 
-class TABLE : public QWidget {
+class Table : public QWidget {
     Q_OBJECT
 public:
-    explicit TABLE(QWidget* parent = 0);
-    ~TABLE();
+    explicit Table(QWidget* parent = 0);
+    ~Table();
 
     bool IsChecked(int row)
     {

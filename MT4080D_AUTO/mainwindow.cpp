@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget* parent)
         ui->cbxMt4080->addItem(info.portName());
         ui->cbxRelay->addItem(info.portName());
     }
-    connect(MI::mt, &MT4080::Primary, this, &MainWindow::Primary);
     connect(MI::mt, &MT4080::Display, this, &MainWindow::Display);
+    connect(MI::mt, &MT4080::Primary, this, &MainWindow::Primary);
 
     connect(ui->hsRelPos, &QSlider::valueChanged, MI::rel, &Relay::SetEnabledRelay);
     connect(ui->hsRelPos, &QSlider::valueChanged, [&](int value) { ui->label_rel->setText(QString("Поз. %1:").arg(value)); });
@@ -70,7 +70,10 @@ MainWindow::MainWindow(QWidget* parent)
         }
     });
 
+#ifndef QT_DEBUG
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+#endif
+
     readSettings();
 }
 
@@ -84,7 +87,7 @@ MainWindow::~MainWindow()
 void MainWindow::Display(const MT4080::Display_t& val)
 {
     ui->lineEdit_1->setText(val.firest.function);
-    ui->lineEdit_2->setValue(val.firest.value);
+    ui->lineEdit_2->setValue(val.firest.value * pow(10.0, ui->spinBox->value()));
     //ui->lineEdit_2->setPrefix(val.PrimaryFunction);
     //ui->lineEdit_2->setSuffix(val.PrimaryUnit);
     ui->lineEdit_3->setText(val.firest.unit);
@@ -121,6 +124,7 @@ void MainWindow::writeSettings()
 
     settings.setValue("sbxSkipMeas", ui->sbxSkipMeas->value());
     settings.setValue("sbxMeasCount", ui->sbxMeasCount->value());
+    settings.setValue("spinBox", ui->spinBox->value());
 
     settings.endGroup();
 }
@@ -142,6 +146,7 @@ void MainWindow::readSettings()
 
     ui->sbxSkipMeas->setValue(settings.value("sbxSkipMeas").toInt());
     ui->sbxMeasCount->setValue(settings.value("sbxMeasCount").toInt());
+    ui->spinBox->setValue(settings.value("spinBox").toInt());
 
     settings.endGroup();
 }
@@ -180,6 +185,8 @@ void MainWindow::on_pbStartMeas_clicked(bool checked)
 
 void MainWindow::Primary(double val)
 {
+
+    val *= pow(10.0, ui->spinBox->value());
     static int oneMessageBox = 0;
     static QMap<int, bool> selected;
 
@@ -240,7 +247,7 @@ void MainWindow::Primary(double val)
                     break;
                 }
                 ++Counter;
-                qDebug() << Counter;
+                //qDebug() << Counter;
             }
         } while (0);
         mutex.unlock();

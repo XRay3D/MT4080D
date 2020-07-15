@@ -30,7 +30,7 @@ public:
 
 private:
     enum {
-        Columns = 4,
+        Columns = 6,
         Rows = 58,
     };
 

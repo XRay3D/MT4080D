@@ -2,7 +2,7 @@
 
 Q_DECLARE_METATYPE(Qt::CheckState)
 
-TABLE::TABLE(QWidget* parent)
+Table::Table(QWidget* parent)
     : QWidget(parent)
     , m_flag1(QVector<int>(10, Qt::Unchecked))
     , m_clipboard(QApplication::clipboard())
@@ -70,8 +70,8 @@ TABLE::TABLE(QWidget* parent)
         tableitem->setToolTip(list[col]);
         m_tableHeader->setItem(0, col, tableitem);
     }
-    connect(m_tableData, &QTableWidget::itemClicked, this, &TABLE::ItemClicked);
-    connect(m_tableHeader, &QTableWidget::itemClicked, this, &TABLE::ItemClicked);
+    connect(m_tableData, &QTableWidget::itemClicked, this, &Table::ItemClicked);
+    connect(m_tableHeader, &QTableWidget::itemClicked, this, &Table::ItemClicked);
 
     readSettings();
     createActions();
@@ -79,7 +79,7 @@ TABLE::TABLE(QWidget* parent)
     m_timerResizeEvent = startTimer(100);
 }
 
-TABLE::~TABLE()
+Table::~Table()
 {
     writeSettings();
 }
@@ -92,7 +92,7 @@ TABLE::~TABLE()
 
 
 
-void TABLE::writeSettings()
+void Table::writeSettings()
 {
     QSettings settings;
     settings.beginGroup("TABLE");
@@ -128,7 +128,7 @@ void TABLE::writeSettings()
     //    file.write((char*)m_data, sizeof(double) * 58 * 4 * 100);
 }
 
-void TABLE::readSettings()
+void Table::readSettings()
 {
     QSettings settings;
     settings.beginGroup("TABLE");
@@ -184,13 +184,13 @@ void TABLE::readSettings()
     }
 }
 
-void TABLE::createActions()
+void Table::createActions()
 {
     m_actCopy = new QAction(tr("Копировать данные"), this);
-    connect(m_actCopy, &QAction::triggered, this, &TABLE::Copy);
+    connect(m_actCopy, &QAction::triggered, this, &Table::Copy);
 }
 
-void TABLE::UpdateRowColumnEnabled()
+void Table::UpdateRowColumnEnabled()
 {
     for (int row = 0; row < m_tableData->rowCount(); ++row) {
         for (int col = 1; col < m_tableData->columnCount(); ++col) {
@@ -204,7 +204,7 @@ void TABLE::UpdateRowColumnEnabled()
     }
 }
 
-void TABLE::Copy()
+void Table::Copy()
 {
     QString str;
     for (int col = 0; col < m_tableHeader->columnCount(); ++col) {
@@ -220,7 +220,7 @@ void TABLE::Copy()
     m_clipboard->setText(str);
 }
 
-void TABLE::contextMenuEvent(QContextMenuEvent* event)
+void Table::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu menu(this);
     menu.addAction(m_actCopy);
@@ -231,7 +231,7 @@ void TABLE::contextMenuEvent(QContextMenuEvent* event)
 
 
 
-void TABLE::ItemClicked(QTableWidgetItem* item)
+void Table::ItemClicked(QTableWidgetItem* item)
 {
     if (!item)
         return;
@@ -271,7 +271,7 @@ void TABLE::ItemClicked(QTableWidgetItem* item)
     }
 }
 
-void TABLE::timerEvent(QTimerEvent* e)
+void Table::timerEvent(QTimerEvent* e)
 {
     static QSize Size;
     if (e->timerId() == m_timerResizeEvent) {

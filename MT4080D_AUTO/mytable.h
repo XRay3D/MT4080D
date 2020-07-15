@@ -53,8 +53,7 @@ private:
     // QWidget interface
 protected:
     void showEvent(QShowEvent* event) override;
-    void resizeEvent(QResizeEvent* event) override;
-    void contextMenuEvent(QContextMenuEvent *event) override;
+    void contextMenuEvent(QContextMenuEvent* event) override;
 };
 
 #endif // TABLE_COEFFICIENTS_H

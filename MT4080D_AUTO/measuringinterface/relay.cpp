@@ -60,8 +60,8 @@ bool Relay::SetEnabledRelay(int relay)
 {
     QMutexLocker Locker(&m_mutex);
     if (IsConnected()) {
-        quint32 r = pow(2, relay);
-        emit Write(parcel(SET_ENABLED_RELAYS, r));
+        quint8 r = static_cast<quint8>(relay); //32 r = pow(2, relay);
+        emit Write(parcel(SET_CHANNEL, r));
         if (m_semaphore.tryAcquire(1, 100))
             m_result = true;
     }
@@ -72,7 +72,7 @@ bool Relay::SetEnabledRelays(quint32 relay)
 {
     QMutexLocker Locker(&m_mutex);
     if (IsConnected()) {
-        emit Write(parcel(SET_ENABLED_RELAYS, relay));
+        emit Write(parcel(SET_CHANNEL, relay));
         if (m_semaphore.tryAcquire(1, 100))
             m_result = true;
     }
@@ -158,15 +158,15 @@ Port::Port(Relay* manInterface)
 {
     m_f[PING] = &Relay::RxPing;
 
-    m_f[SET_ENABLED_RELAYS] = &Relay::RxSetEnabledRelays;
-    m_f[GET_ENABLED_RELAYS] = &Relay::RxGetEnabledRelays;
+    m_f[SET_CHANNEL] = &Relay::RxSetEnabledRelays;
+    m_f[SET_CUSTOM] = &Relay::RxGetEnabledRelays;
 
     m_f[BUFFER_OVERFLOW] = &Relay::RxBufferOverflow;
     m_f[WRONG_COMMAND] = &Relay::RxWrongCommand;
     m_f[TEXTUAL_PARCEL] = &Relay::RxTextualParcel;
     m_f[CRC_ERROR] = &Relay::RxCrcError;
 
-    setBaudRate(QSerialPort::Baud19200);
+    setBaudRate(QSerialPort::Baud9600);
     setParity(QSerialPort::NoParity);
     setFlowControl(QSerialPort::NoFlowControl);
     connect(this, &QSerialPort::readyRead, this, &Port::ReadyRead);
@@ -198,11 +198,11 @@ void Port::ReadyRead()
         const Parcel_t* const parcel = reinterpret_cast<const Parcel_t*>(m_data.constData() + i);
         if (parcel->start == RX) {
             if ((parcel->len + i) <= m_data.size()) {
-               m_tmpData = m_data.mid(i, parcel->len);
+                m_tmpData = m_data.mid(i, parcel->len);
                 if (checkParcel(m_data.mid(i, parcel->len)))
-                    (m_r->*m_f[parcel->cmd])(m_tmpData/**parcel*/);
+                    (m_r->*m_f[parcel->cmd])(m_tmpData /**parcel*/);
                 else {
-                    (m_r->*m_f[CRC_ERROR])(m_tmpData/**parcel*/);
+                    (m_r->*m_f[CRC_ERROR])(m_tmpData /**parcel*/);
                     m_data.clear();
                 }
                 m_data.remove(0, i + parcel->len);
@@ -210,22 +210,22 @@ void Port::ReadyRead()
             }
         }
     }
-//    QMutexLocker locker(&m_mutex);
-//    m_data.append(readAll());
-//    for (int i = 0; i < m_data.size() - 3; ++i) {
-//        const Parcel_t* p = reinterpret_cast<const Parcel_t*>(m_data.constData() + i);
-//        if (p->Start == 0x55AA) {
-//            if ((i + p->Len) <= m_data.size()) {
-//                m_tmpData = m_data.mid(i, p->Len);
-//                if (CheckData(m_tmpData))
-//                    (m_r->*m_f[p->Cmd])(m_tmpData);
-//                else {
-//                    (m_r->*m_f[CRC_ERROR])(m_tmpData);
-//                    m_data.clear();
-//                }
-//                m_data.remove(0, i + p->Len);
-//                i = -1;
-//            }
-//        }
-//    }
+    //    QMutexLocker locker(&m_mutex);
+    //    m_data.append(readAll());
+    //    for (int i = 0; i < m_data.size() - 3; ++i) {
+    //        const Parcel_t* p = reinterpret_cast<const Parcel_t*>(m_data.constData() + i);
+    //        if (p->Start == 0x55AA) {
+    //            if ((i + p->Len) <= m_data.size()) {
+    //                m_tmpData = m_data.mid(i, p->Len);
+    //                if (CheckData(m_tmpData))
+    //                    (m_r->*m_f[p->Cmd])(m_tmpData);
+    //                else {
+    //                    (m_r->*m_f[CRC_ERROR])(m_tmpData);
+    //                    m_data.clear();
+    //                }
+    //                m_data.remove(0, i + p->Len);
+    //                i = -1;
+    //            }
+    //        }
+    //    }
 }

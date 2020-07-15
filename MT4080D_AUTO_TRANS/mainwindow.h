@@ -16,7 +16,8 @@ namespace Ui {
 class MainWindow;
 }
 
-class QTableWidgetItem;
+//class QTableWidgetItem;
+class Model;
 
 ////using namespace QtCharts;
 //QT_CHARTS_BEGIN_NAMESPACE
@@ -29,22 +30,26 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget* parent = 0);
+    explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
 
 private slots:
     void Display(const MT4080::Display_t& val);
     void Primary(double val);
 
+    void on_checkBox_clicked(bool checked);
+
 private:
     Ui::MainWindow* ui;
 
     double lastValue = 0.0;
     double value = 0.0;
-    double min = 0.0;
-    double max = 0.0;
+    double barMin = 0.0;
+    double barMax = 0.0;
 
+    Model* model;
     MT4080* mt4080;
+
     QIcon start;
     QIcon stop;
     QMutex mutex;
@@ -62,25 +67,22 @@ private:
     void ConnectSignals();
     void CreateChart();
     void contextMenuEvent(QContextMenuEvent* event);
-    void Copy();
-    void MessageErrorRelaySwitch();
-    void MessageMeasureEnded();
-    void MessageMoveBoard(int val);
+
     void readSettings();
     void writeSettings();
-    void UpdateChart(double val);
+    void UpdateChart();
     void dsb(double);
     void reset();
 
-    typedef struct border_t {
+    /*typedef*/ struct border_t {
         double max;
         double maxErr;
         double min;
         double minErr;
         int fl;
-    } border_t;
+    } /*border_t*/ border;
 
-    border_t border;
+    //    border_t border;
 };
 
 #endif // MAINWINDOW_H

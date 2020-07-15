@@ -19,8 +19,8 @@ enum Command_e {
     // Interface system
     PING,
     // User
-    SET_ENABLED_RELAYS,
-    GET_ENABLED_RELAYS,
+    SET_CHANNEL,
+    SET_CUSTOM,
     // Interface system
     BUFFER_OVERFLOW = 0xF0,
     WRONG_COMMAND = 0xF1,
@@ -30,6 +30,7 @@ enum Command_e {
 
 class CallBack {
 public:
+    virtual ~CallBack() = default;
     // Interface system
     virtual void RxPing(const QByteArray& data) = 0;
     // User
@@ -50,7 +51,7 @@ class Relay : public QObject, private MyProtokol, public CommonInterfaces, priva
     friend class Port;
 
 public:
-    Relay(QObject* parent = 0);
+    Relay(QObject* parent = nullptr);
     ~Relay();
 
     bool Ping(const QString& PortName = QString());

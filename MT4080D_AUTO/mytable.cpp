@@ -43,6 +43,9 @@ MyTable::MyTable(QWidget* parent)
     });
     connect(reinterpret_cast<MyHeader*>(verticalHeader()), &MyHeader::stateChanged, m_model, &MyModel::stateChanged);
 
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+
     readSettings();
 }
 
@@ -105,39 +108,24 @@ void MyTable::readSettings()
     settings.endGroup();
 }
 
-void MyTable::resizeEvent(QResizeEvent* /*event*/)
-{
-    int w = width();
-    w -= verticalHeader()->width() + verticalScrollBar()->width() + 3;
-    int w2 = w / 4;
-    w = w - w2 * 4;
-
-    QVector<int> width1(4, w2);
-
-    while (w > 0)
-        ++width1[w-- % 4];
-
-    for (int i = 0; i < 4; ++i)
-        setColumnWidth(i, width1[i]);
-}
-
 void MyTable::contextMenuEvent(QContextMenuEvent* event)
 {
     QMenu menu;
     QAction* at = menu.addAction(QIcon(), "Копировать данные", [&]() {
         QClipboard* m_clipboard{ QApplication ::clipboard() };
         QString str;
-        for (int col = 0; col < 4; ++col) {
+        const int columnCount = model()->columnCount();
+        for (int col = 0; col < columnCount; ++col) {
             str.append(m_model->headerData(col, Qt::Horizontal, Qt::DisplayRole).toString() + '\t');
         }
         str.append("\r\n");
         for (int row = 0; row < 58; ++row) {
-            for (int col = 0; col < 4; ++col) {
+            for (int col = 0; col < columnCount; ++col) {
                 str.append(QString::number(m_model->getChData(row, col)) + '\t');
             }
             str.append("\r\n");
         }
-        m_clipboard->setText(str);
+        m_clipboard->setText(str.replace('.', ','));
     },
         QKeySequence(QKeySequence::Copy));
     menu.exec(event->globalPos(), at);
@@ -187,7 +175,6 @@ void MyHeader::mouseMoveEvent(QMouseEvent* event)
     if (index != logicalIndexAt(event->pos())) {
         index = logicalIndexAt(event->pos());
         if (event->buttons() & Qt::LeftButton) {
-            qDebug() << "mouseMoveEvent" << event;
             m_isOn[index] = !m_isOn[index];
             updateSection(index);
             stateChanged(m_isOn, orientation());

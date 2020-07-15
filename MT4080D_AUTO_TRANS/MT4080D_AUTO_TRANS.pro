@@ -4,12 +4,14 @@
 #
 #-------------------------------------------------
 
-QT       += core gui serialport multimedia charts
+QT += core gui serialport multimedia charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = MT4080D_AUTO_TRANS
 TEMPLATE = app
+
+CONFIG += c++17
 
 win32:RC_FILE = main_icon/myapp.rc
 
@@ -17,9 +19,11 @@ include(../MT4080/mt4080.pri)
 INCLUDEPATH += ../MT4080
 
 SOURCES += main.cpp\
-	mainwindow.cpp \
+        mainwindow.cpp \
+        model.cpp
 
 HEADERS  += mainwindow.h \
+        model.h
 
 FORMS    += mainwindow.ui
 

@@ -22,9 +22,11 @@ void Model::addData(double data, bool _new)
 
 void Model::clear()
 {
-    beginRemoveRows(QModelIndex(), 0, m_data.size() - 1);
-    m_data.clear();
-    endRemoveRows();
+    if (m_data.size()) {
+        beginRemoveRows(QModelIndex(), 0, m_data.size() - 1);
+        m_data.clear();
+        endRemoveRows();
+    }
 }
 
 void Model::copy()

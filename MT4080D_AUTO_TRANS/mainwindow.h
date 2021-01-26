@@ -38,6 +38,9 @@ private slots:
     void Primary(double val);
 
     void on_checkBox_clicked(bool checked);
+    void on_cbxTrans_currentIndexChanged(int index);
+
+    void on_pbTranses_clicked();
 
 private:
     Ui::MainWindow* ui;

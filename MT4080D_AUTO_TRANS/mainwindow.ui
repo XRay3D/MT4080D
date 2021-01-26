@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>690</width>
-    <height>484</height>
+    <height>487</height>
    </rect>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -260,14 +260,14 @@
         </widget>
        </item>
        <item row="4" column="2">
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="pbTranses">
          <property name="text">
           <string>Трансы</string>
          </property>
         </widget>
        </item>
        <item row="4" column="3">
-        <widget class="QComboBox" name="comboBox"/>
+        <widget class="QComboBox" name="cbxTrans"/>
        </item>
       </layout>
      </widget>
@@ -455,7 +455,7 @@
      <x>0</x>
      <y>0</y>
      <width>690</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>

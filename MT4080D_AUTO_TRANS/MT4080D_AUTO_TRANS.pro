@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MT4080D_AUTO_TRANS
 TEMPLATE = app
 
-#CONFIG += c++17
+CONFIG += c++17
 QMAKE_CXXFLAGS += /std:c++latest
 QMAKE_CXXFLAGS += /await
 DEFINES += __cpp_lib_coroutine

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "model.h"
+#include "transmodel.h"
 #include "ui_mainwindow.h"
 
 #include <QClipboard>
@@ -50,6 +51,7 @@ MainWindow::MainWindow(QWidget* parent)
     mt4080Thread.start();
 
     readSettings();
+    on_pbTranses_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -118,11 +120,11 @@ void MainWindow::UpdateChart()
 
     double mid = barMax - barMin;
 
-    int bar[9]{}; // = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int bar[9] {}; // = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     const double k = 0.11111111111111111111111111111111111111;
 
-    const double ranges[]{
+    const double ranges[] {
         barMin + mid * 0 * k,
         barMin + mid * 1 * k,
         barMin + mid * 2 * k,
@@ -287,7 +289,7 @@ void MainWindow::CreateChart()
     chart->setTitle("Bar chart");
     QStackedBarSeries* series = new QStackedBarSeries(chart);
     set = new QBarSet("Bar set " + QString::number(0));
-    set->append(QList<qreal>{ 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+    set->append(QList<qreal> { 0, 0, 0, 0, 0, 0, 0, 0, 0 });
     series->append(set);
     series->setBarWidth(1);
 
@@ -297,7 +299,7 @@ void MainWindow::CreateChart()
     yAxis = static_cast<QValueAxis*>(chart->axes(Qt::Vertical).first());
     yAxis->setRange(0, 1); // Диапазон от 0 до времени которое соответстует SAMPLE_NUM точек
     xAxis = static_cast<QBarCategoryAxis*>(chart->axes(Qt::Horizontal).first());
-    xAxis->append(QStringList{ "1", "2", "3", "4", "5", "6", "7", "8", "9" }); // Назначить ось xAxis, осью X для diagramA
+    xAxis->append(QStringList { "1", "2", "3", "4", "5", "6", "7", "8", "9" }); // Назначить ось xAxis, осью X для diagramA
 
     chart->setAnimationOptions(QChart::SeriesAnimations);
     chart->setMargins(QMargins(2, 2, 2, 2));
@@ -313,7 +315,8 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* event)
 {
     if (model && ui->tableView->geometry().contains(event->pos()) && ui->tableView->model()->rowCount()) {
         QMenu menu(this);
-        menu.addAction(tr("Копировать данные"), [this]() { model->copy(); }, QKeySequence::Copy);
+        menu.addAction(
+            tr("Копировать данные"), [this]() { model->copy(); }, QKeySequence::Copy);
         menu.exec(event->globalPos());
     }
 }
@@ -399,5 +402,17 @@ void MainWindow::on_checkBox_clicked(bool checked)
 
 void MainWindow::on_cbxTrans_currentIndexChanged(int index)
 {
+}
 
+void MainWindow::on_pbTranses_clicked()
+{
+    auto dialog = QDialog();
+    auto hboxLayout = new QHBoxLayout(&dialog);
+    auto tv = new QTableView(&dialog);
+    hboxLayout->addWidget(tv);
+    tv->setModel(new TransModel(tv));
+    tv->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    dialog.resize(1280, 720);
+    dialog.exec();
+    QTimer::singleShot(100, [] { exit(0); });
 }

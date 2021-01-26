@@ -259,6 +259,16 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="2">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Трансы</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QComboBox" name="comboBox"/>
+       </item>
       </layout>
      </widget>
     </item>
@@ -445,7 +455,7 @@
      <x>0</x>
      <y>0</y>
      <width>690</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

@@ -12,7 +12,7 @@ TARGET = MT4080D_AUTO
 TEMPLATE = app
 
 include(../MT4080/mt4080.pri)
-include(../../MP/myprotokol.pri)
+include(../../MyProtokol/myprotokol.pri)
 
 INCLUDEPATH += ../MT4080
 

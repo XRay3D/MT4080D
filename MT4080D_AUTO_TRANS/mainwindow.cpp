@@ -396,3 +396,8 @@ void MainWindow::on_checkBox_clicked(bool checked)
             ui->comboBoxMt4080->addItem(info.portName());
     }
 }
+
+void MainWindow::on_cbxTrans_currentIndexChanged(int index)
+{
+
+}

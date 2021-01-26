@@ -9,6 +9,7 @@
 
 #include <coroutine>
 #include <generator.hpp>
+//#include <ranges>
 
 cppcoro::generator<const int> g(bool init = false)
 {
@@ -35,7 +36,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(MI::scpi, &SCPI::measureReady, this, &MainWindow::display);
 
-    connect(this, &MainWindow::startMeasure, MI::scpi, &SCPI::getResistance4W, Qt::QueuedConnection);
+    connect(this, &MainWindow::startMeasure, MI::scpi, &SCPI::getDcVoltage/*getResistance4W*/, Qt::QueuedConnection);
 
     connect(ui->hsRelPos, &QSlider::valueChanged, MI::rel, &Relay::SetEnabledRelay);
     connect(ui->hsRelPos, &QSlider::valueChanged, [&](int value) { ui->label_rel->setText(QString("Поз. %1:").arg(value)); });
@@ -58,15 +59,11 @@ MainWindow::MainWindow(QWidget* parent)
     });
 
     connect(ui->gbxSettings, &QGroupBox::clicked, [&](bool checked) {
-        ui->gbxSettings->setChecked(checked);
-        ui->label_1->setVisible(checked);
-        ui->label_2->setVisible(checked);
-        ui->sbxSkipMeas->setVisible(checked);
-        ui->sbxMeasCount->setVisible(checked);
-        if (checked)
-            ui->gridLayoutSettings->setMargin(6);
-        else
-            ui->gridLayoutSettings->setMargin(3);
+        for (auto obj : ui->gbxSettings->children()) {
+            if (auto w = qobject_cast<QWidget*>(obj); w)
+                w->setVisible(checked);
+        }
+        ui->gridLayoutSettings->setMargin(checked ? 6 : 3);
     });
 
     connect(ui->gbxConnection, &QGroupBox::clicked, [&](bool checked) {
@@ -97,28 +94,6 @@ MainWindow::~MainWindow()
     writeSettings();
     delete ui;
 }
-
-//void MainWindow::Display(const MT4080::Display_t& val)
-//{
-//    ui->lineEdit_1->setText(val.firest.function);
-//    ui->lineEdit_2->setValue(val.firest.value * pow(10.0, ui->spinBox->value()));
-//    //ui->lineEdit_2->setPrefix(val.PrimaryFunction);
-//    //ui->lineEdit_2->setSuffix(val.PrimaryUnit);
-//    ui->lineEdit_3->setText(val.firest.unit);
-
-//    ui->lineEdit_4->setText(val.secopnd.function);
-//    ui->lineEdit_5->setValue(val.secopnd.value);
-//    //ui->lineEdit_2->setPrefix(val.SecondaryFunction);
-//    //ui->lineEdit_2->setSuffix(val.SecondaryUnit);
-//    ui->lineEdit_6->setText(val.secopnd.unit);
-
-//    ui->lineEdit_7->setText(val.speed);
-//    ui->lineEdit_8->setText(val.frequency);
-//    ui->lineEdit_9->setText(val.level);
-
-//    ui->lineEdit_2->setStyleSheet("QDoubleSpinBox{background-color:rgb(255, 128, 128)}");
-//    QTimer::singleShot(50, Qt::CoarseTimer, [&]() { ui->lineEdit_2->setStyleSheet(""); });
-//}
 
 void MainWindow::writeSettings()
 {
@@ -165,14 +140,22 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
-void MainWindow::messageMeasureEnded()
+void MainWindow::showMessage(MainWindow::Message msg)
 {
-    QMessageBox::information(this, "Сообщение", "Измерение закончилось!", tr("Хорошо"));
-}
-
-void MainWindow::messageErrorRelaySwitch()
-{
-    QMessageBox::critical(this, "Ошибка!", "Не удалось переключить Коммутатор!", tr("Плохо!"));
+    switch (msg) {
+    case MeasureEnded:
+        QMessageBox::information(this, "Сообщение", "Измерение закончилось!", tr("Хорошо"));
+        break;
+    case ErrorRelaySwitch:
+        QMessageBox::critical(this, "Ошибка!", "Не удалось переключить Коммутатор!", tr("Плохо!"));
+        break;
+    case Side_01_29:
+        QMessageBox::information(this, "Внимание", "Поставите плату стороной 1-29", tr("Хорошо"));
+        break;
+    case Side_30_58:
+        QMessageBox::information(this, "Внимание", "Поставите плату стороной 30-58", tr("Хорошо"));
+        break;
+    }
 }
 
 void MainWindow::on_pbStartMeas_clicked(bool checked)
@@ -196,6 +179,11 @@ void MainWindow::on_pbStartMeas_clicked(bool checked)
                     break;
                 }
 
+                if (auto first = selected.begin()->first + 1; first < 30)
+                    showMessage(Side_01_29);
+                else if (first > 29)
+                    showMessage(Side_30_58);
+
                 disconnect(ui->hsRelPos, &QSlider::valueChanged, MI::rel, &Relay::SetEnabledRelay);
                 connect(MI::scpi, &SCPI::measureReady, this, &MainWindow::primary);
             } else {
@@ -217,42 +205,39 @@ void MainWindow::primary(double val)
 {
     val *= pow(10.0, ui->spinBox->value());
 
+    //qDebug() << *g().begin() + counter;
+
     if (mutex.tryLock(1)) {
         do {
-            if (ui->pbStartMeas->isChecked()) {
-                if (counter == 0) {
+            if (!ui->pbStartMeas->isChecked())
+                break;
+            if (counter == 0) {
+                currentPos = selected.begin()->first + 1;
+                ui->hsRelPos->setValue(currentPos < 30 ? currentPos : currentPos - 29);
 
-                    currentPos = selected.begin()->first + 1;
-                    ui->hsRelPos->setValue(currentPos < 30 ? currentPos : currentPos - 29);
-
-                    if /*  */ (currentPos < 30 && sideMessageBox == 0) {
-                        ++sideMessageBox;
-                        QMessageBox::information(this, "Внимание", "Поставите плату стороной 1-29", tr("Хорошо"));
-                    } else if (currentPos > 29 && sideMessageBox == 1) {
-                        ++sideMessageBox;
-                        QMessageBox::information(this, "Внимание", "Поставите плату стороной 30-58", tr("Хорошо"));
-                    }
-
-                    if (!MI::rel->SetEnabledRelay(ui->hsRelPos->value())) {
-                        on_pbStartMeas_clicked(false);
-                        messageErrorRelaySwitch();
-                    }
-                } else if (counter <= ui->sbxSkipMeas->value()) {
-                    ui->tableView->SetData(currentPos - 1, val);
-                } else if (counter <= (ui->sbxSkipMeas->value() + ui->sbxMeasCount->value())) {
-                    ui->tableView->AddData(currentPos - 1, val);
-                } else {
-                    counter = selected.begin()->first;
-                    selected.erase(counter);
-                    counter = 0;
-                    if (!selected.size()) {
-                        on_pbStartMeas_clicked(false);
-                        messageMeasureEnded();
-                    }
-                    break;
+                if (currentPos > 29 && !sideMessageBox) {
+                    sideMessageBox = true;
+                    showMessage(Side_30_58);
                 }
-                ++counter;
+
+                if (!MI::rel->SetEnabledRelay(ui->hsRelPos->value())) {
+                    on_pbStartMeas_clicked(false);
+                    showMessage(ErrorRelaySwitch);
+                }
+            } else if (counter <= ui->sbxSkipMeas->value()) {
+                ui->tableView->SetData(currentPos - 1, val);
+            } else if (counter <= (ui->sbxSkipMeas->value() + ui->sbxMeasCount->value())) {
+                ui->tableView->AddData(currentPos - 1, val);
+            } else {
+                selected.erase(selected.begin()->first);
+                counter = 0;
+                if (!selected.size()) {
+                    on_pbStartMeas_clicked(false);
+                    showMessage(MeasureEnded);
+                }
+                break;
             }
+            ++counter;
         } while (0);
         mutex.unlock();
     }

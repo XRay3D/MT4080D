@@ -18,14 +18,14 @@ QMAKE_CXXFLAGS += /await
 DEFINES += __cpp_lib_coroutine
 
 #include(../MT4080/mt4080.pri)
-include(../../MP/myprotokol.pri)
+include(../../MyProtokol/myprotokol.pri)
 
 INCLUDEPATH += ../MT4080
 INCLUDEPATH += cppcoro-vs2019/include/cppcoro
 
 win32:RC_FILE = myapp.rc
 
-DESTDIR = $$_PRO_FILE_PWD_/bin
+DESTDIR = $$_PRO_FILE_PWD_/../bin
 
 SOURCES += \
     main.cpp\

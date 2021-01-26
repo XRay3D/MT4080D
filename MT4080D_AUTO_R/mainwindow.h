@@ -21,7 +21,6 @@ public:
     static inline UsedMap selected;
 
 private slots:
-    //    void Display(const MT4080::Display_t& val);
     void on_pbStartMeas_clicked(bool checked);
     void primary(double val);
     void on_pbPing_clicked(bool checked);
@@ -39,10 +38,17 @@ private:
     void writeSettings();
     void readSettings();
 
-    int sideMessageBox = 0;
+    bool sideMessageBox = false;
 
-    void messageMeasureEnded();
-    void messageErrorRelaySwitch();
+    enum Message {
+        MeasureEnded,
+        ErrorRelaySwitch,
+        Side_01_29,
+        Side_30_58,
+    };
+
+    void showMessage(Message msg);
+
     QIcon start;
     QIcon stop;
     QMutex mutex;

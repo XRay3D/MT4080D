@@ -4,12 +4,14 @@
 #include "common_interfaces.h"
 
 #include <QMutex>
+#include <QSemaphore>
 #include <QSerialPort>
 
 class SCPI : public QSerialPort, public CommonInterfaces {
     Q_OBJECT
 public:
     explicit SCPI(QObject* parent = nullptr);
+    ~SCPI();
     bool ping(const QString& potName = QString());
 
     double getDcVoltage();
@@ -29,6 +31,8 @@ private:
     int m_counter;
     QMutex m_mutex;
     double value = 0.0;
+    //    PinoutSignals ps;
+    //    QSemaphore s;
 };
 
 #endif // SCPI_H

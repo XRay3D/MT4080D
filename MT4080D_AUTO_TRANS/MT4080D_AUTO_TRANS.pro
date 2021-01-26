@@ -11,19 +11,27 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MT4080D_AUTO_TRANS
 TEMPLATE = app
 
-CONFIG += c++17
+#CONFIG += c++17
+QMAKE_CXXFLAGS += /std:c++latest
+QMAKE_CXXFLAGS += /await
+DEFINES += __cpp_lib_coroutine
 
 win32:RC_FILE = main_icon/myapp.rc
 
+DESTDIR = $$_PRO_FILE_PWD_/../bin
+
 include(../MT4080/mt4080.pri)
 INCLUDEPATH += ../MT4080
+INCLUDEPATH += ../../magic_get/include
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-        model.cpp
+        model.cpp \
+        transmodel.cpp
 
 HEADERS  += mainwindow.h \
-        model.h
+        model.h \
+        transmodel.h
 
 FORMS    += mainwindow.ui
 

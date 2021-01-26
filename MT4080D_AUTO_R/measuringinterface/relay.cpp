@@ -195,7 +195,7 @@ void Port::ReadyRead()
     m_data.append(readAll());
     qDebug() << m_data.toHex().toUpper();
     for (int i = 0; i < m_data.size() - 3; ++i) {
-        const Parcel_t* const parcel = reinterpret_cast<const Parcel_t*>(m_data.constData() + i);
+        const Parcel* const parcel = reinterpret_cast<const Parcel*>(m_data.constData() + i);
         if (parcel->start == RX) {
             if ((parcel->len + i) <= m_data.size()) {
                 m_tmpData = m_data.mid(i, parcel->len);

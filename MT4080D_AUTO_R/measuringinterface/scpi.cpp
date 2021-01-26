@@ -1,6 +1,7 @@
 #include "scpi.h"
 #include <QDebug>
 #include <QThread>
+#include <QTime>
 
 SCPI::SCPI(QObject* parent)
     : QSerialPort(parent)
@@ -8,7 +9,22 @@ SCPI::SCPI(QObject* parent)
     setBaudRate(QSerialPort::Baud9600);
     setParity(QSerialPort::NoParity);
     setFlowControl(QSerialPort::NoFlowControl);
+    //    setFlowControl(QSerialPort::HardwareControl);
+
+    //    connect(this, &QSerialPort::baudRateChanged, [](qint32 baudRate, QSerialPort::Directions directions) { qDebug() << baudRate << directions; });
+    //    connect(this, &QSerialPort::breakEnabledChanged, [](bool set) { qDebug() << "BE" << set; });
+    //    connect(this, &QSerialPort::dataBitsChanged, [](QSerialPort::DataBits dataBits) { qDebug() << dataBits; });
+    //    connect(this, &QSerialPort::dataTerminalReadyChanged, [](bool set) { qDebug() << "DTR" << set; });
+    //    //    connect(this, &QSerialPort::errorOccurred, [](QSerialPort::SerialPortError error) { qDebug() << error; });
+    //    connect(this, &QSerialPort::flowControlChanged, [](QSerialPort::FlowControl flow) { qDebug() << flow; });
+    //    connect(this, &QSerialPort::parityChanged, [](QSerialPort::Parity parity) { qDebug() << parity; });
+    //    connect(this, &QSerialPort::requestToSendChanged, [](bool set) { qDebug() << "RTS" << set; });
+    //    connect(this, &QSerialPort::stopBitsChanged, [](QSerialPort::StopBits stopBits) { qDebug() << stopBits; });
+
+    //    connect(this, &QIODevice::readyRead, [this]() { qDebug() << "readyRead"; s.release(); });
 }
+
+SCPI::~SCPI() { }
 
 bool SCPI::ping(const QString& potName)
 {
@@ -17,10 +33,10 @@ bool SCPI::ping(const QString& potName)
     m_connected = false;
     setPortName(potName);
     if (open(ReadWrite)) {
-        waitForReadyRead(100);
+        thread()->msleep(100);
         setDataTerminalReady(true);
         setRequestToSend(true);
-        waitForReadyRead(100);
+        thread()->msleep(100);
         qDebug() << WriteRead("*IDN?");
         if (m_data.endsWith("\r\n")) {
             Write("SYSTem:REMote");
@@ -37,17 +53,28 @@ QByteArray& SCPI::WriteRead(const QByteArray& data)
     m_data.clear();
     write(data + "\r\n");
     m_counter = 0;
-    while (++m_counter < 100 && !canReadLine())
+    while (++m_counter < 100 && !canReadLine()) {
         waitForReadyRead(100);
+    }
     m_data.append(readAll());
     return m_data;
+}
+
+void SCPI::Write(const QByteArray& data)
+{
+    m_data.clear();
+    write(data + "\r\n");
+    m_counter = 0;
+    while (++m_counter < 1000 && !((DataCarrierDetectSignal | DataSetReadySignal) & pinoutSignals())) {
+        waitForReadyRead(10);
+    }
 }
 
 double SCPI::getDcVoltage()
 {
     QMutexLocker locker(&m_mutex);
     if (isConnected()) {
-        WriteRead("MEASure:VOLTage:DC?");
+        WriteRead("MEASure:VOLTage:DC? DEF, MIN");
         if (m_data.endsWith("\r\n")) {
             value = m_data.toDouble();
             measureReady(value);
@@ -112,13 +139,4 @@ double SCPI::getResistance4W()
         }
     }
     return 0.0;
-}
-
-void SCPI::Write(const QByteArray& data)
-{
-    m_data.clear();
-    write(data + "\r\n");
-    m_counter = 0;
-    while (++m_counter < 1000 && !((DataCarrierDetectSignal | DataSetReadySignal) & pinoutSignals()))
-        waitForReadyRead(10);
 }

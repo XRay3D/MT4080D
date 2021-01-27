@@ -16,8 +16,19 @@
 //#include <qt_windows.h>
 #include <QHeaderView>
 #include <QScrollBar>
+#include <QSortFilterProxyModel>
+#include <QStyledItemDelegate>
 
 using namespace QtCharts;
+
+class PopupItemDelegate : public QStyledItemDelegate {
+public:
+    using QStyledItemDelegate::QStyledItemDelegate;
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override
+    {
+        return QStyledItemDelegate::sizeHint(option, index) + QSize(0, 10);
+    }
+};
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
@@ -37,6 +48,14 @@ MainWindow::MainWindow(QWidget* parent)
     ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
+    ui->cbxTrans->setModel(new TransModel(ui->cbxTrans));
+    ui->cbxTrans->setModelColumn(2);
+    ui->cbxTrans->view()->setItemDelegate(new PopupItemDelegate(ui->cbxTrans));
+    //    ui->cbxTrans->setStyleSheet("QComboBox {"
+    //                                "   padding-left: 2px;"
+    //                                "   text-align: center;"
+    //                                "}");
+
     for (const QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
         if (info.manufacturer().contains("Silicon"))
             ui->comboBoxMt4080->addItem(info.portName());
@@ -51,7 +70,7 @@ MainWindow::MainWindow(QWidget* parent)
     mt4080Thread.start();
 
     readSettings();
-    on_pbTranses_clicked();
+    //on_pbTranses_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -400,8 +419,10 @@ void MainWindow::on_checkBox_clicked(bool checked)
     }
 }
 
-void MainWindow::on_cbxTrans_currentIndexChanged(int index)
+void MainWindow::on_cbxTrans_currentIndexChanged(int)
 {
+    ui->dsbMax->setValue(ui->cbxTrans->currentData(Trans::RangeMax).toDouble());
+    ui->dsbMin->setValue(ui->cbxTrans->currentData(Trans::RangeMin).toDouble());
 }
 
 void MainWindow::on_pbTranses_clicked()
@@ -410,9 +431,21 @@ void MainWindow::on_pbTranses_clicked()
     auto hboxLayout = new QHBoxLayout(&dialog);
     auto tv = new QTableView(&dialog);
     hboxLayout->addWidget(tv);
-    tv->setModel(new TransModel(tv));
+    hboxLayout->setMargin(6);
+    auto pm = new QSortFilterProxyModel(tv);
+    pm->setSourceModel(ui->cbxTrans->model());
+    pm->sort(0, Qt::AscendingOrder);
+    tv->setSortingEnabled(true);
+    tv->setModel(pm);
     tv->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    tv->horizontalHeader()->setSectionResizeMode(6, QHeaderView::Stretch);
+    tv->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    tv->verticalHeader()->setDefaultSectionSize(0);
+    tv->hideColumn(0);
+    tv->setAlternatingRowColors(true);
+    tv->findChild<QAbstractButton*>()->disconnect();
+    connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv] { tv->sortByColumn(0, Qt::AscendingOrder); });
     dialog.resize(1280, 720);
     dialog.exec();
-    QTimer::singleShot(100, [] { exit(0); });
+    //QTimer::singleShot(100, [] { exit(0); });
 }

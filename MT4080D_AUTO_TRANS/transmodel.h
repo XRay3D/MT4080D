@@ -7,7 +7,7 @@
 struct Trans {
     int no; // №
     QString nkgzh; // НКГЖ. ...
-    QString marking; // Марки-ровка
+    QString marking; // Маркировка
     QString device; // Прибор
     QString housing; // Корпус
     int testVoltage; // according to KD // Испытательное напряжение по КД
@@ -17,39 +17,62 @@ struct Trans {
     double rangeMin;
     double rangeMax; //, μH // ДИАПАЗОН, мкГн
     QString controlType; // Вид контроля
+    enum MyRole {
+        RangeMin = Qt::UserRole + 0,
+        RangeMax = Qt::UserRole + 1,
+    };
 };
 
 class TransModel : public QAbstractTableModel {
     Q_OBJECT
 
     std::vector<Trans> m_data;
+    void save();
+    void load();
 
 public:
     explicit TransModel(QObject* parent = nullptr);
     ~TransModel();
-signals:
 
-    // QAbstractItemModel interface
 public:
+    // QAbstractItemModel interface
     int rowCount(const QModelIndex& parent) const override;
     int columnCount(const QModelIndex& parent) const override;
-
     QVariant data(const QModelIndex& index, int role) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role) override;
     Qt::ItemFlags flags(const QModelIndex& index) const override;
-    static inline QString hd[] = {
-        "no",
-        "nkgzh",
-        "marking",
-        "device",
-        "housing",
-        "testVoltage",
-        "testVoltageType",
-        "controlWindingPiNnumbers",
-        "controlWindingInductance",
-        "rangeMin",
-        "rangeMax",
-        "controlType",
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+
+    enum ColumKey {
+        No,
+        Nkgzh,
+        Marking,
+        Device,
+        Housing,
+        TestVoltage,
+        TestVoltageType,
+        ControlWindingPiNnumbers,
+        ControlWindingInductance,
+        RangeMin,
+        RangeMax,
+        ControlType,
+    };
+    Q_ENUM(ColumKey)
+    static QString toColumKeyName(int c);
+
+    static const inline QString headers[] = {
+        "№",
+        "НКГЖ",
+        "Марки-\nровка",
+        "Входит в\nсостав\nприбора",
+        "Корпус",
+        "Испытательное\nнапряжение по\nКД",
+        "Род\nнапряжения",
+        "Номера\nвыводов\nконтрольной\nобмотки",
+        "Индуктивность\nконтрольной\nобмотки,\nмкГн",
+        "Диапазон\nмин.,\nмкГн",
+        "Диапазон\nмакс.,\nмкГн",
+        "Вид\nконтроля",
     };
 };
 

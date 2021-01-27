@@ -30,6 +30,7 @@ SOURCES += main.cpp\
         transmodel.cpp
 
 HEADERS  += mainwindow.h \
+        magicgetruntime.h \
         model.h \
         transmodel.h
 

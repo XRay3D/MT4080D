@@ -54,8 +54,8 @@ public:
     QSpinBox *sbScale;
     QDoubleSpinBox *dsbMax;
     QDoubleSpinBox *dsbMaxErr;
-    QPushButton *pushButton_2;
-    QComboBox *comboBox;
+    QPushButton *pbTranses;
+    QComboBox *cbxTrans;
     QGroupBox *groupBox_mt4080;
     QGridLayout *gridLayout;
     QLineEdit *lineEdit_1;
@@ -76,7 +76,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(690, 484);
+        MainWindow->resize(411, 631);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         verticalLayout = new QVBoxLayout(centralWidget);
@@ -220,15 +220,15 @@ public:
 
         gridLayout_3->addWidget(dsbMaxErr, 2, 3, 1, 1);
 
-        pushButton_2 = new QPushButton(groupBoxSettings);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        pbTranses = new QPushButton(groupBoxSettings);
+        pbTranses->setObjectName(QString::fromUtf8("pbTranses"));
 
-        gridLayout_3->addWidget(pushButton_2, 4, 2, 1, 1);
+        gridLayout_3->addWidget(pbTranses, 4, 2, 1, 1);
 
-        comboBox = new QComboBox(groupBoxSettings);
-        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+        cbxTrans = new QComboBox(groupBoxSettings);
+        cbxTrans->setObjectName(QString::fromUtf8("cbxTrans"));
 
-        gridLayout_3->addWidget(comboBox, 4, 3, 1, 1);
+        gridLayout_3->addWidget(cbxTrans, 4, 3, 1, 1);
 
 
         verticalLayout->addWidget(groupBoxSettings);
@@ -334,7 +334,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 690, 21));
+        menuBar->setGeometry(QRect(0, 0, 411, 21));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QString::fromUtf8("statusBar"));
@@ -357,7 +357,7 @@ public:
         lbSettings_4->setText(QApplication::translate("MainWindow", "Max Error:", nullptr));
         lbSettings_2->setText(QApplication::translate("MainWindow", "Min:", nullptr));
         lbSettings_1->setText(QApplication::translate("MainWindow", "Min Error:", nullptr));
-        pushButton_2->setText(QApplication::translate("MainWindow", "\320\242\321\200\320\260\320\275\321\201\321\213", nullptr));
+        pbTranses->setText(QApplication::translate("MainWindow", "\320\242\321\200\320\260\320\275\321\201\321\213", nullptr));
         groupBox_mt4080->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 MT4080D", nullptr));
         pushButton_clearTable->setText(QApplication::translate("MainWindow", "\320\236\321\202\321\207\320\270\321\201\321\202\320\270\321\202\321\214 \321\202\320\260\320\261\320\273\320\270\321\206\321\203", nullptr));
         Q_UNUSED(MainWindow);

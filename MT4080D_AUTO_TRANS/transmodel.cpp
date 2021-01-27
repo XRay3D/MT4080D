@@ -32,7 +32,7 @@ void TransModel::save()
 
 void TransModel::load()
 {
-    QFile file("трансформаторы.json");
+    QFile file("трансформаторы.json_");
     if (file.open(QFile::ReadOnly)) {
         auto jArray(QJsonDocument::fromJson(file.readAll()).array());
         m_data.resize(jArray.size());
@@ -73,7 +73,10 @@ TransModel::TransModel(QObject* parent)
     load();
 }
 
-TransModel::~TransModel() { save(); }
+TransModel::~TransModel()
+{
+    save();
+}
 
 int TransModel::rowCount(const QModelIndex&) const { return static_cast<int>(m_data.size()); }
 

@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget* parent)
     mt4080Thread.start();
 
     readSettings();
-    //on_pbTranses_clicked();
+    on_pbTranses_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -453,5 +453,5 @@ void MainWindow::on_pbTranses_clicked()
     });
     dialog.resize(1280, 720);
     dialog.exec();
-    //QTimer::singleShot(100, [] { exit(0); });
+    QTimer::singleShot(100, [] { exit(0); });
 }

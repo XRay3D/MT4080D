@@ -4,7 +4,10 @@
 #include <QDebug>
 #include <QVariant>
 
-#ifdef __ASD__
+//#define __AAA__
+//#define __BBB__
+
+#ifdef __AAA__
 
 template <typename T>
 inline constexpr size_t pod_size_v = boost::pfr::tuple_size<std::decay_t<T>>::value;
@@ -45,51 +48,86 @@ constexpr auto get_at(T& pod, const size_t idx) { return get_visit_impl<pod_size
 template <typename T>
 constexpr auto get_at(const T& pod, const size_t idx) { return get_visit_impl<pod_size_v<T>>::get(pod, idx); }
 
+#elif defined(__BBB__)
+
+template <typename T>
+inline constexpr size_t pod_size_v = boost::pfr::tuple_size<std::decay_t<T>>::value;
+
+template <typename T, typename F, std::size_t... I>
+void visit_impl(T& pod, const size_t idx, F fun, std::index_sequence<I...>)
+{
+    ((I == idx ? fun(boost::pfr::get<I>(pod)) : void()), ...);
+}
+
+template <typename T, std::size_t... I>
+QVariant get_impl(T&& pod, const size_t idx, std::index_sequence<I...>)
+{
+    QVariant ret;
+    return ((I == idx ? ret = boost::pfr::get<I>(pod) : ret), ..., ret);
+}
+
+template <typename F, typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr void visit_at(T& pod, const size_t idx, F fun) { visit_impl(pod, idx, fun, Indices {}); }
+template <typename F, typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr void visit_at(const T& pod, const size_t idx, F fun) { visit_impl(pod, idx, fun, Indices {}); }
+
+//template <typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+//constexpr auto get_at(T& pod, const size_t idx) { return get_impl(pod, idx, Indices {}); }
+template <typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr auto get_at(const T& pod, const size_t idx) { return get_impl(pod, idx, Indices {}); }
 #else
 
 template <typename T>
 inline constexpr size_t pod_size_v = boost::pfr::tuple_size<std::decay_t<T>>::value;
 
-template <size_t I>
-struct get_visit_impl {
-    template <typename T, typename F>
-    constexpr static void visit(T& pod, const size_t idx, F fun)
-    {
-        (idx == I) ? fun(boost::pfr::get<I>(pod))
-                   : get_visit_impl<I - 1>::visit(pod, idx, fun);
-    }
+namespace detail {
+
+template <std::size_t I>
+class getter {
+public:
+    explicit getter() { }
     template <typename T>
-    constexpr static auto get(T& pod, const size_t idx)
-    {
-        return (idx == I) ? boost::pfr::get<I>(pod)
-                          : get_visit_impl<I - 1>::get(pod, idx);
-    }
+    auto operator()(T&& pod) { return boost::pfr::get<I>(pod); }
 };
 
-template <>
-struct get_visit_impl<0> {
-    template <typename T, typename F>
-    constexpr static void visit(T& pod, const size_t idx, F fun)
-    {
-        assert(idx == 0);
-        fun(boost::pfr::get<0>(pod));
-    }
-    template <typename T>
-    constexpr static QVariant get(T& pod, const size_t idx)
-    {
-        assert(idx == 0);
-        return boost::pfr::get<0>(pod);
-    }
+template <typename T>
+using function = std::function<QVariant(T)>;
+
+template <typename T, size_t... Is>
+struct array {
+    static function<T> data[sizeof...(Is)];
 };
 
-template <typename F, typename T>
-constexpr void visit_at(T& pod, const size_t idx, F fun) { get_visit_impl<pod_size_v<T> - 1>::visit(pod, idx, fun); }
-template <typename F, typename T>
-constexpr void visit_at(const T& pod, const size_t idx, F fun) { get_visit_impl<pod_size_v<T> - 1>::visit(pod, idx, fun); }
+template <typename T, size_t... Is>
+function<T> array<T, Is...>::data[sizeof...(Is)] = { getter<Is>()... };
 
-template <typename T>
-constexpr auto get_at(T& pod, const size_t idx) { return get_visit_impl<pod_size_v<T> - 1>::get(pod, idx); }
-template <typename T>
-constexpr auto get_at(const T& pod, const size_t idx) { return get_visit_impl<pod_size_v<T> - 1>::get(pod, idx); }
+template <typename T, std::size_t... I>
+QVariant get_impl(T&& pod, const size_t idx, std::index_sequence<I...>)
+{
+    return array<T, I...>::data[idx](pod);
+}
+
+template <typename T, typename F, std::size_t... I>
+void visit_impl(T& pod, const size_t idx, F fun, std::index_sequence<I...>)
+{
+    ((I == idx ? fun(boost::pfr::get<I>(pod)) : void()), ...);
+}
+}
+
+template <typename F, typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr void visit_at(T& pod, const size_t idx, F fun)
+{
+    detail::visit_impl(pod, idx, fun, Indices {});
+}
+template <typename F, typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr void visit_at(const T& pod, const size_t idx, F fun)
+{
+    detail::visit_impl(pod, idx, fun, Indices {});
+}
+
+template <typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr auto get_at(T&& pod, const size_t idx) { return detail::get_impl(pod, idx, Indices {}); }
+template <typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>>
+constexpr auto get_at(const T& pod, const size_t idx) { return detail::get_impl(pod, idx, Indices {}); }
 
 #endif

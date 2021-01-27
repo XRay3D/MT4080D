@@ -14,6 +14,7 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QStackedBarSeries>
 //#include <qt_windows.h>
+#include <QElapsedTimer>
 #include <QHeaderView>
 #include <QScrollBar>
 #include <QSortFilterProxyModel>
@@ -444,7 +445,12 @@ void MainWindow::on_pbTranses_clicked()
     tv->hideColumn(0);
     tv->setAlternatingRowColors(true);
     tv->findChild<QAbstractButton*>()->disconnect();
-    connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv] { tv->sortByColumn(0, Qt::AscendingOrder); });
+    connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv] {
+        QElapsedTimer t;
+        t.start();
+        tv->sortByColumn(0, Qt::AscendingOrder);
+        qDebug() << (t.nsecsElapsed() / 1000000.0) << "ms";
+    });
     dialog.resize(1280, 720);
     dialog.exec();
     //QTimer::singleShot(100, [] { exit(0); });

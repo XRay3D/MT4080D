@@ -15,7 +15,7 @@
 
 void TransModel::save()
 {
-    QFile file("трансформаторы.json");
+    QFile file("трансформаторы.json_");
     if (file.open(QFile::WriteOnly)) {
         QJsonArray jArray;
         for (auto& trans : m_data) {
@@ -89,10 +89,10 @@ QVariant TransModel::data(const QModelIndex& index, int role) const
         && (index.column() == 5 || index.column() == 9 || index.column() == 10)
         && get_at(m_data[index.row()], index.column()) == 0)
         return QColor(255, 127, 127);
-    else if (role == Qt::UserRole + 0)
-        return get_at(m_data[index.row()], 9);
-    else if (role == Qt::UserRole + 1)
-        return get_at(m_data[index.row()], 10);
+    else if (role == Trans::RangeMin)
+        return m_data[index.row()].rangeMin;
+    else if (role == Trans::RangeMax)
+        return m_data[index.row()].rangeMax;
     return {};
 }
 

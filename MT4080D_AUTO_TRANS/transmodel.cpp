@@ -15,7 +15,7 @@
 
 void TransModel::save()
 {
-    QFile file("трансформаторы.json_");
+    QFile file("трансформаторы.json");
     if (file.open(QFile::WriteOnly)) {
         QJsonArray jArray;
         for (auto& trans : m_data) {
@@ -66,9 +66,64 @@ int TransModel::columnCount(const QModelIndex&) const { return static_cast<int>(
 
 QVariant TransModel::data(const QModelIndex& index, int role) const
 {
-    if (role == Qt::DisplayRole || role == Qt::EditRole)
-        return get_at(m_data[index.row()], index.column());
-    else if (role == Qt::TextAlignmentRole && index.column() != 1)
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        if /*  */ constexpr (1) { // 126.191 ms 99
+            return get_at(m_data[index.row()], index.column());
+        } else if constexpr (0) { // 133.285 ms 99
+            if /*  */ (index.column() == No) {
+                return m_data[index.row()].no;
+            } else if (index.column() == Nkgzh) {
+                return m_data[index.row()].nkgzh;
+            } else if (index.column() == Marking) {
+                return m_data[index.row()].marking;
+            } else if (index.column() == Device) {
+                return m_data[index.row()].device;
+            } else if (index.column() == Housing) {
+                return m_data[index.row()].housing;
+            } else if (index.column() == TestVoltage) {
+                return m_data[index.row()].testVoltage;
+            } else if (index.column() == TestVoltageType) {
+                return m_data[index.row()].testVoltageType;
+            } else if (index.column() == ControlWindingPiNnumbers) {
+                return m_data[index.row()].controlWindingPiNnumbers;
+            } else if (index.column() == ControlWindingInductance) {
+                return m_data[index.row()].controlWindingInductance;
+            } else if (index.column() == RangeMin) {
+                return m_data[index.row()].rangeMin;
+            } else if (index.column() == RangeMax) {
+                return m_data[index.row()].rangeMax;
+            } else if (index.column() == ControlType) {
+                return m_data[index.row()].controlType;
+            }
+        } else if constexpr (0) { // 170.744 ms 99
+            switch (index.column()) {
+            case No:
+                return m_data[index.row()].no;
+            case Nkgzh:
+                return m_data[index.row()].nkgzh;
+            case Marking:
+                return m_data[index.row()].marking;
+            case Device:
+                return m_data[index.row()].device;
+            case Housing:
+                return m_data[index.row()].housing;
+            case TestVoltage:
+                return m_data[index.row()].testVoltage;
+            case TestVoltageType:
+                return m_data[index.row()].testVoltageType;
+            case ControlWindingPiNnumbers:
+                return m_data[index.row()].controlWindingPiNnumbers;
+            case ControlWindingInductance:
+                return m_data[index.row()].controlWindingInductance;
+            case RangeMin:
+                return m_data[index.row()].rangeMin;
+            case RangeMax:
+                return m_data[index.row()].rangeMax;
+            case ControlType:
+                return m_data[index.row()].controlType;
+            }
+        }
+    } else if (role == Qt::TextAlignmentRole && index.column() != 1)
         return Qt::AlignCenter;
     else if (role == Qt::BackgroundColorRole
         && (index.column() == 5 || index.column() == 9 || index.column() == 10)

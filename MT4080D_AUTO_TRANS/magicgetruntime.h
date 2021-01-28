@@ -16,7 +16,9 @@ inline constexpr index_t pod_size_v = boost::pfr::tuple_size<std::decay_t<T>>::v
 #define __VARIADIC_TEMPLATES_UNPACKING_ARRAY_VIRT__
 
 #ifdef __TEMPLATES_RECURSION__ // 175.828 ms 99
-
+////////////////////////////////////////////////////////////////////
+///
+///
 template <index_t I>
 struct get_visit_impl {
     template <typename T, typename F>
@@ -54,7 +56,9 @@ template <typename T>
 constexpr auto get_at(const T& pod, const index_t idx) { return get_visit_impl<pod_size_v<T>>::get(pod, idx); }
 
 #elif defined(__VARIADIC_TEMPLATES_UNPACKING_IF__) // 138.9 ms 99
-
+////////////////////////////////////////////////////////////////////
+///
+///
 template <typename T, typename F, index_t... I>
 void visit_impl(T& pod, const index_t idx, F fun, std::index_sequence<I...>)
 {
@@ -79,7 +83,9 @@ template <typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>
 constexpr auto get_at(const T& pod, const index_t idx) { return get_impl(pod, idx, Indices {}); }
 
 #elif defined(__VARIADIC_TEMPLATES_UNPACKING_ARRAY_FUNC__) // 122.626 ms 99
-
+////////////////////////////////////////////////////////////////////
+///
+///
 namespace detail {
 
 template <index_t I>
@@ -124,7 +130,9 @@ template <typename T, typename Indices = std::make_index_sequence<pod_size_v<T>>
 constexpr auto get_at(const T& pod, const index_t idx) { return detail::get_impl(pod, idx, Indices {}); }
 
 #elif defined(__VARIADIC_TEMPLATES_UNPACKING_ARRAY_VIRT__) // 116.363 ms 99
-
+////////////////////////////////////////////////////////////////////
+///
+///
 namespace detail {
 
 template <typename T>

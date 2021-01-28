@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget* parent)
     mt4080Thread.start();
 
     readSettings();
-    on_pbTranses_clicked();
+    //on_pbTranses_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -446,18 +446,19 @@ void MainWindow::on_pbTranses_clicked()
     tv->setAlternatingRowColors(true);
     tv->findChild<QAbstractButton*>()->disconnect();
     connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv, this] {
-        qint64 tt = 0, ctr = 0;
-        QElapsedTimer t;
-        for (int k = 0; k < 100; ++k) {
-            t.start();
-            for (int i = 0; i < ui->cbxTrans->model()->columnCount(); ++i)
-                tv->sortByColumn(i, Qt::AscendingOrder);
-            tv->sortByColumn(0, Qt::AscendingOrder);
-            tt += t.nsecsElapsed();
-            qDebug() << (tt / (1000000.0 * ++ctr)) << "ms" << k;
-        }
+        //        qint64 tt = 0, ctr = 0;
+        //        QElapsedTimer t;
+        //        for (int k = 0; k < 100; ++k) {
+        //            t.start();
+        //            for (int i = 0; i < ui->cbxTrans->model()->columnCount(); ++i)
+        //                tv->sortByColumn(i, Qt::AscendingOrder);
+        //            tv->sortByColumn(0, Qt::AscendingOrder);
+        //            tt += t.nsecsElapsed();
+        //            qDebug() << (tt / (1000000.0 * ++ctr)) << "ms" << k;
+        //        }
+        tv->sortByColumn(0, Qt::AscendingOrder);
     });
     dialog.resize(1280, 720);
     dialog.exec();
-    QTimer::singleShot(100, [] { exit(0); });
+    //QTimer::singleShot(100, [] { exit(0); });
 }

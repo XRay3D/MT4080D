@@ -20,7 +20,7 @@ void TransModel::save()
         QJsonArray jArray;
         for (auto& trans : m_data) {
             QVariantMap varMap;
-            for (size_t i = 0; i < pod_size_v<Trans>; ++i) {
+            for (index_t i = 0; i < pod_size_v<Trans>; ++i) {
                 varMap[toColumKeyName(i)] = get_at(trans, i);
             }
             jArray << QJsonObject::fromVariantMap(varMap);
@@ -32,35 +32,17 @@ void TransModel::save()
 
 void TransModel::load()
 {
-    QFile file("трансформаторы.json_");
+    QFile file("трансформаторы.json");
     if (file.open(QFile::ReadOnly)) {
         auto jArray(QJsonDocument::fromJson(file.readAll()).array());
         m_data.resize(jArray.size());
         for (auto& trans : m_data) {
             auto jObject(jArray.takeAt(0));
-            for (size_t k = 0; k < pod_size_v<Trans>; ++k) {
+            for (index_t k = 0; k < pod_size_v<Trans>; ++k) {
                 visit_at(trans, k, [jObject, k](auto&& arg) {
                     using T = std::decay_t<decltype(arg)>;
                     arg = jObject[toColumKeyName(k)].toVariant().value<T>();
                 });
-                if (0 && k == Marking) {
-                    visit_at(trans, k, [](auto&& arg) {
-                        using T = std::decay_t<decltype(arg)>;
-                        if constexpr (std::is_same_v<T, QString>) {
-                            arg = arg.replace("T", "Т");
-                            //                            QRegExp rx("(\\d),.*(\\d)");
-                            //                            if (rx.exactMatch(arg)) {
-                            //                                bool ok;
-                            //                                if (int a = rx.cap(1).toInt(&ok); ok)
-                            //                                    if (int b = rx.cap(2).toInt(&ok); ok && abs(a - b) == 1) {
-                            //                                        qDebug() << rx.capturedTexts();
-                            //                                        arg = std::min(rx.cap(1), rx.cap(2)) + " – " + std::max(rx.cap(1), rx.cap(2));
-                            //                                        qDebug() << arg;
-                            //                                    }
-                            //                            }
-                        }
-                    });
-                }
             }
         }
     } else

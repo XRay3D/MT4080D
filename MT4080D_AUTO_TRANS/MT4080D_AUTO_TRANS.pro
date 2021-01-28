@@ -23,6 +23,7 @@ DESTDIR = $$_PRO_FILE_PWD_/../bin
 include(../MT4080/mt4080.pri)
 INCLUDEPATH += ../MT4080
 INCLUDEPATH += ../../magic_get/include
+INCLUDEPATH += C:/local/boost_1_71_0
 
 SOURCES += main.cpp\
         mainwindow.cpp \

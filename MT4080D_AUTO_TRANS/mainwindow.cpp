@@ -445,11 +445,17 @@ void MainWindow::on_pbTranses_clicked()
     tv->hideColumn(0);
     tv->setAlternatingRowColors(true);
     tv->findChild<QAbstractButton*>()->disconnect();
-    connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv] {
+    connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv, this] {
+        qint64 tt = 0, ctr = 0;
         QElapsedTimer t;
-        t.start();
-        tv->sortByColumn(0, Qt::AscendingOrder);
-        qDebug() << (t.nsecsElapsed() / 1000000.0) << "ms";
+        for (int k = 0; k < 100; ++k) {
+            t.start();
+            for (int i = 0; i < ui->cbxTrans->model()->columnCount(); ++i)
+                tv->sortByColumn(i, Qt::AscendingOrder);
+            tv->sortByColumn(0, Qt::AscendingOrder);
+            tt += t.nsecsElapsed();
+            qDebug() << (tt / (1000000.0 * ++ctr)) << "ms" << k;
+        }
     });
     dialog.resize(1280, 720);
     dialog.exec();

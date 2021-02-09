@@ -3,12 +3,28 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QColor>
+#include <QDataStream>
+#include <QFile>
 
 Model::Model(const double& min, const double& max, QObject* parent)
     : QAbstractTableModel(parent)
     , m_max(max)
     , m_min(min)
 {
+    QFile file("data.bin");
+    if (file.open(QFile::ReadOnly)) {
+        QDataStream stream(&file);
+        stream >> m_data;
+    }
+}
+
+Model::~Model()
+{
+    QFile file("data.bin");
+    if (file.open(QFile::WriteOnly)) {
+        QDataStream stream(&file);
+        stream << m_data;
+    }
 }
 
 void Model::addData(double data, bool _new)
@@ -17,7 +33,12 @@ void Model::addData(double data, bool _new)
         insertRow(m_data.size());
     else
         m_data.last() = data;
-    dataChanged(createIndex(m_data.size() - 1, 0), createIndex(m_data.size() - 1, 0));
+    QFile file("data.bin");
+    if (file.open(QFile::WriteOnly)) {
+        QDataStream stream(&file);
+        stream << m_data;
+    }
+    emit dataChanged(createIndex(m_data.size() - 1, 0), createIndex(m_data.size() - 1, 0), { Qt::DisplayRole });
 }
 
 void Model::clear()
@@ -73,6 +94,8 @@ bool Model::insertRows(int position, int rows, const QModelIndex& /*int row, int
 
     for (int row = 0; row < rows; ++row)
         m_data.append(0.0);
+
     endInsertRows();
+
     return true;
 }

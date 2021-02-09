@@ -34,8 +34,8 @@ public:
     ~MainWindow();
 
 private slots:
-    void Display(const MT4080::Display_t& val);
-    void Primary(double val);
+    void display(const MT4080::Display& val);
+    void primary(double val);
 
     void on_checkBox_clicked(bool checked);
     void on_cbxTrans_currentIndexChanged(int index);

@@ -85,7 +85,7 @@ QVariant TransModel::data(const QModelIndex& index, int role) const
             } else if (index.column() == TestVoltageType) {
                 return m_data[index.row()].testVoltageType;
             } else if (index.column() == ControlWindingPiNnumbers) {
-                return m_data[index.row()].controlWindingPiNnumbers;
+                return m_data[index.row()].controlWindingPinNumbers;
             } else if (index.column() == ControlWindingInductance) {
                 return m_data[index.row()].controlWindingInductance;
             } else if (index.column() == RangeMin) {
@@ -112,7 +112,7 @@ QVariant TransModel::data(const QModelIndex& index, int role) const
             case TestVoltageType:
                 return m_data[index.row()].testVoltageType;
             case ControlWindingPiNnumbers:
-                return m_data[index.row()].controlWindingPiNnumbers;
+                return m_data[index.row()].controlWindingPinNumbers;
             case ControlWindingInductance:
                 return m_data[index.row()].controlWindingInductance;
             case RangeMin:
@@ -133,6 +133,8 @@ QVariant TransModel::data(const QModelIndex& index, int role) const
         return m_data[index.row()].rangeMin;
     else if (role == Trans::RangeMax)
         return m_data[index.row()].rangeMax;
+    else if (role == Trans::Pins)
+        return m_data[index.row()].controlWindingPinNumbers;
     return {};
 }
 

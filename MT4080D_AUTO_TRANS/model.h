@@ -11,6 +11,7 @@ class Model : public QAbstractTableModel {
 
 public:
     explicit Model(const double& min, const double& max, QObject* parent = nullptr);
+    ~Model() override;
     void addData(double data, bool _new = false);
     void clear();
     void copy();

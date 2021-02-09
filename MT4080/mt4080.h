@@ -17,27 +17,27 @@ public:
     explicit MT4080(QObject* parent = 0);
     ~MT4080();
 
-    bool Open(const QString& portName);
-    void Close();
+    bool open(const QString& portName);
+    void close();
 
-    typedef struct Display_t {
+    typedef struct Display {
         struct {
             QString function;
             double value;
             QString unit;
-        } firest;
+        } primary;
         struct {
             QString function;
             double value;
             QString unit;
-        } secopnd;
+        } secondary;
         QString speed;
         QString frequency;
         QString level;
-    } Display_t;
+    } Display;
 
 #pragma pack(push, 1)
-    typedef struct RawDisplay_t {
+    typedef struct RawDisplay {
         uint8_t start;
         uint8_t type;
         unsigned testFrequency : 3;
@@ -52,7 +52,7 @@ public:
         unsigned measurementModes : 4;
         unsigned remoteMode : 2;
         unsigned cs : 8;
-    } RawDisplay_t;
+    } RawDisplay;
 
     typedef struct Measure_t {
         uint8_t start;
@@ -65,9 +65,9 @@ public:
 #pragma pack(pop)
 
 signals:
-    void Primary(double val);
-    void Second(double val);
-    void Display(const Display_t& val);
+    void primary(double val);
+    void second(double val);
+    void display(const Display& val);
 
 private:
     enum ParcelType {
@@ -78,9 +78,9 @@ private:
 
     enum BeginParcel {
         START_DATA = 2, //          Начало посылки
-        HEADER_PARAMETERS = START_DATA << 8 | MEASURE_PARAMETERS, //  Параметры измерения
-        HEADER_DCR = START_DATA << 8 | MEASURE_DCR, //              Измерение соапротивления DCR
-        HEADER_OTHER = START_DATA << 8 | MEASURE_OTHER, //          Другие измерерния
+        HEADER_PARAMETERS = START_DATA | MEASURE_PARAMETERS << 8, //  Параметры измерения
+        HEADER_DCR = START_DATA | MEASURE_DCR << 8, //              Измерение соапротивления DCR
+        HEADER_OTHER = START_DATA | MEASURE_OTHER << 8, //          Другие измерерния
     };
 
     enum ParcelLength { // Длина посылки
@@ -103,22 +103,66 @@ private:
 
     QSerialPort port;
 
-    const QStringList slFrequency;
-    const QStringList slLevel;
-    const QStringList slRelative;
-    const QStringList slSpeed;
+    using ccc = const char* const;
+    using pair = std::pair<ccc, ccc>;
 
-    using Pair = QPair<QString, QString>;
+    static constexpr ccc slFrequency[] {
+        "100Hz",
+        "120Hz",
+        "1kHz",
+        "10kHz",
+        "100kHz",
+    };
+    static constexpr ccc slLevel[] {
+        "50mVrms",
+        "250mVrms",
+        "1Vrms",
+        "1VDC",
+    };
+    static constexpr ccc slRelative[] {
+        "REL",
+        "",
+    };
 
-    const QList<Pair> slCombDispParallelMode;
-    const QList<Pair> slCombDispSerialMode;
-    const QList<Pair> slMode1;
-    const QList<Pair> slMode2;
+    static constexpr ccc slSpeed[] {
+        "SLOW ",
+        "FAST",
+    };
 
-    Display_t display;
-    RawDisplay_t rawDisplay;
+    static constexpr pair slCombDispParallelMode[] {
+        { "Cp", "D" },
+        { "Cp", "Q" },
+        { "Lp", "D" },
+        { "Lp", "Q" }
+    };
+    static constexpr pair slCombDispSerialMode[] {
+        { "Z", "θ" },
+        { "Cs", "D" },
+        { "Cs", "Q" },
+        { "Cs", "ESR" },
+        { "Ls", "D" },
+        { "Ls", "Q" },
+        { "Ls", "ESR" },
+    };
+    static constexpr pair slMode1[] {
+        { "Lp", "H" },
+        { "Ls", "H" },
+        { "Cp", "µF" },
+        { "Cs", "µF" },
+        { "Z", "Ω" },
+        { "DCR", "Ω" },
+    };
+    static constexpr pair slMode2[] {
+        { "D", "" },
+        { "Q", "" },
+        { "θ", "Deg" },
+        { "ESR", "Ω" },
+        { "", "" },
+    };
 
-    enum primaryParameterDisplay {
+    Display m_display;
+
+    enum PrimaryValue {
         Lp, // Parallel Inductance
         Ls, // Serial Inductance
         Cp, // Parallel Capacitance
@@ -127,14 +171,14 @@ private:
         DCR // DC Resistance
     };
 
-    enum secondParameterDisplay {
+    enum SecondaryValue {
         D, // Dissipation Factor
         Q, // Quality Factor
         O, // Phase Angle
         ESR // Equivalence Serial Resistance
     };
 
-    enum frequency {
+    enum Frequency {
         f100Hz,
         f120Hz,
         f1KHz,
@@ -142,14 +186,14 @@ private:
         f100KHz // (MT4080A only)
     };
 
-    enum level {
+    enum Level {
         l1Vrms,
         l250mVrms,
         l50mVrms,
         l1VDC //(DCR only)
     };
 
-    enum range {
+    enum Range {
         G,
         M,
         k,

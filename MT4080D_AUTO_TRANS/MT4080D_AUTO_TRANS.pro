@@ -30,12 +30,12 @@ SOURCES += main.cpp\
         model.cpp \
         transmodel.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS += mainwindow.h \
         magicgetruntime.h \
         model.h \
         transmodel.h
 
-FORMS    += mainwindow.ui
+FORMS   += mainwindow.ui
 
 DISTFILES += \
 	myapp.ico \

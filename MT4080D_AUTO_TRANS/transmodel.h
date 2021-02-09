@@ -12,7 +12,7 @@ struct Trans {
     QString housing; // Корпус
     int testVoltage; // according to KD // Испытательное напряжение по КД
     QString testVoltageType; // according to KD // Испытательное напряжение по КД
-    QString controlWindingPiNnumbers; // Номера выводов контрольной обмотки
+    QString controlWindingPinNumbers; // Номера выводов контрольной обмотки
     QString controlWindingInductance; // μH // Индуктивность  контрольной обмотки, мкГн
     double rangeMin;
     double rangeMax; //, μH // ДИАПАЗОН, мкГн
@@ -20,6 +20,7 @@ struct Trans {
     enum MyRole {
         RangeMin = Qt::UserRole + 0,
         RangeMax = Qt::UserRole + 1,
+        Pins = Qt::UserRole + 2,
     };
 };
 

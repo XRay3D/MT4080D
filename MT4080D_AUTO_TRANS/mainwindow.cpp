@@ -83,21 +83,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::Display(const MT4080::Display_t& val)
+void MainWindow::display(const MT4080::Display& val)
 {
-    ui->lineEdit_1->setText(val.firest.function);
+    ui->lineEdit_1->setText(val.primary.function);
     //    ui->lineEdit_2->setText(val.PrimaryValue);
-    ui->lineEdit_3->setText(val.firest.unit);
+    ui->lineEdit_3->setText(val.primary.unit);
 
-    ui->lineEdit_4->setText(val.secopnd.function);
+    ui->lineEdit_4->setText(val.secondary.function);
 
-    if (ui->lineEdit_5->minimum() > val.secopnd.value)
-        ui->lineEdit_5->setMinimum(val.secopnd.value);
-    if (ui->lineEdit_5->maximum() < val.secopnd.value)
-        ui->lineEdit_5->setMaximum(val.secopnd.value);
+    if (ui->lineEdit_5->minimum() > val.secondary.value)
+        ui->lineEdit_5->setMinimum(val.secondary.value);
+    if (ui->lineEdit_5->maximum() < val.secondary.value)
+        ui->lineEdit_5->setMaximum(val.secondary.value);
 
-    ui->lineEdit_5->setValue(val.secopnd.value);
-    ui->lineEdit_6->setText(val.secopnd.unit);
+    ui->lineEdit_5->setValue(val.secondary.value);
+    ui->lineEdit_6->setText(val.secondary.unit);
 
     ui->lineEdit_7->setText(val.speed);
     ui->lineEdit_8->setText(val.frequency);
@@ -204,8 +204,8 @@ void MainWindow::readSettings()
 void MainWindow::ConnectSignals()
 {
     connect(&mt4080Thread, &QThread::finished, mt4080, &QObject::deleteLater);
-    connect(mt4080, &MT4080::Display, this, &MainWindow::Display);
-    connect(mt4080, &MT4080::Primary, this, &MainWindow::Primary);
+    connect(mt4080, &MT4080::display, this, &MainWindow::display);
+    connect(mt4080, &MT4080::primary, this, &MainWindow::primary);
 
     connect(ui->dsbMax, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
     connect(ui->dsbMaxErr, QOverload<double>::of(&QDoubleSpinBox::valueChanged), this, &MainWindow::dsb);
@@ -288,14 +288,14 @@ void MainWindow::ConnectSignals()
     connect(ui->pushButton, &QPushButton::clicked,
         [=](bool checked) {
             if (checked) {
-                if (mt4080->Open(ui->comboBoxMt4080->currentText())) {
+                if (mt4080->open(ui->comboBoxMt4080->currentText())) {
                     ui->pushButton->setText("Закончить опрос");
                     ui->pushButton->setIcon(stop);
                 } else {
                     checked = false;
                 }
             } else {
-                mt4080->Close();
+                mt4080->close();
                 ui->pushButton->setText("Начать опрос");
                 ui->pushButton->setIcon(start);
             }
@@ -341,7 +341,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* event)
     }
 }
 
-void MainWindow::Primary(double val)
+void MainWindow::primary(double val)
 {
     if (!mutex.tryLock())
         return;
@@ -424,6 +424,8 @@ void MainWindow::on_cbxTrans_currentIndexChanged(int)
 {
     ui->dsbMax->setValue(ui->cbxTrans->currentData(Trans::RangeMax).toDouble());
     ui->dsbMin->setValue(ui->cbxTrans->currentData(Trans::RangeMin).toDouble());
+    ui->cbxTrans->setToolTip(ui->cbxTrans->currentData(Trans::Pins).toString());
+    ui->pbTranses->setToolTip(ui->cbxTrans->currentData(Trans::Pins).toString());
 }
 
 void MainWindow::on_pbTranses_clicked()

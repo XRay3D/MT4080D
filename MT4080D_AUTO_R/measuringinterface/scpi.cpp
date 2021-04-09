@@ -53,7 +53,7 @@ QByteArray& SCPI::WriteRead(const QByteArray& data)
     m_data.clear();
     write(data + "\r\n");
     m_counter = 0;
-    while (++m_counter < 100 && !canReadLine()) {
+    while (++m_counter < 1000 && !canReadLine()) {
         waitForReadyRead(100);
     }
     m_data.append(readAll());

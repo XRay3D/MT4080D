@@ -55,7 +55,7 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QComboBox" name="comboBoxMt4080">
+        <widget class="QComboBox" name="cbxPortMt4080">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -82,7 +82,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBoxSettings">
+     <widget class="QGroupBox" name="grbxSettings">
       <property name="title">
        <string>Параметры измерения:</string>
       </property>
@@ -273,7 +273,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox_mt4080">
+     <widget class="QGroupBox" name="grbxMt4080">
       <property name="title">
        <string>Параметры MT4080D</string>
       </property>
@@ -294,7 +294,7 @@
         <number>6</number>
        </property>
        <item row="2" column="0">
-        <widget class="QLineEdit" name="lineEdit_1">
+        <widget class="QLineEdit" name="lePrimFunc">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -307,7 +307,7 @@
         </widget>
        </item>
        <item row="3" column="2">
-        <widget class="QLineEdit" name="lineEdit_6">
+        <widget class="QLineEdit" name="leSecondUnit">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -320,7 +320,7 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLineEdit" name="lineEdit_7">
+        <widget class="QLineEdit" name="leSpeed">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -333,7 +333,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QDoubleSpinBox" name="lineEdit_2">
+        <widget class="QDoubleSpinBox" name="dsbxPrimValue">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -358,7 +358,7 @@
         </widget>
        </item>
        <item row="2" column="2">
-        <widget class="QLineEdit" name="lineEdit_3">
+        <widget class="QLineEdit" name="lePrimUnit">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -371,7 +371,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QDoubleSpinBox" name="lineEdit_5">
+        <widget class="QDoubleSpinBox" name="dsbxSecondValue">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -396,7 +396,7 @@
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLineEdit" name="lineEdit_4">
+        <widget class="QLineEdit" name="leSecondFunc">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -409,7 +409,7 @@
         </widget>
        </item>
        <item row="4" column="2">
-        <widget class="QLineEdit" name="lineEdit_9">
+        <widget class="QLineEdit" name="leLevel">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -422,7 +422,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QLineEdit" name="lineEdit_8">
+        <widget class="QLineEdit" name="leFreq">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>

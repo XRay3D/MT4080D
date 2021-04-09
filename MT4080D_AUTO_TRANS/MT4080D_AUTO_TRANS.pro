@@ -11,7 +11,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = MT4080D_AUTO_TRANS
 TEMPLATE = app
 
-CONFIG += c++17
 QMAKE_CXXFLAGS += /std:c++latest
 QMAKE_CXXFLAGS += /await
 DEFINES += __cpp_lib_coroutine
@@ -22,8 +21,7 @@ DESTDIR = $$_PRO_FILE_PWD_/../bin
 
 include(../MT4080/mt4080.pri)
 INCLUDEPATH += ../MT4080
-INCLUDEPATH += ../../magic_get/include
-INCLUDEPATH += C:/local/boost_1_71_0
+INCLUDEPATH += pfr/include
 
 SOURCES += main.cpp\
         mainwindow.cpp \

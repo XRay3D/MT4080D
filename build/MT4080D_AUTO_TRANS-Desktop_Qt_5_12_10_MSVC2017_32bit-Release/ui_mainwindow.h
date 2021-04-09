@@ -40,9 +40,9 @@ public:
     QGridLayout *gridLayoutConnection;
     QCheckBox *checkBox;
     QPushButton *pushButton;
-    QComboBox *comboBoxMt4080;
+    QComboBox *cbxPortMt4080;
     QPushButton *pushButtonStartStopMeas;
-    QGroupBox *groupBoxSettings;
+    QGroupBox *grbxSettings;
     QGridLayout *gridLayout_3;
     QDoubleSpinBox *dsbMinErr;
     QDoubleSpinBox *dsbMin;
@@ -56,17 +56,17 @@ public:
     QDoubleSpinBox *dsbMaxErr;
     QPushButton *pbTranses;
     QComboBox *cbxTrans;
-    QGroupBox *groupBox_mt4080;
+    QGroupBox *grbxMt4080;
     QGridLayout *gridLayout;
-    QLineEdit *lineEdit_1;
-    QLineEdit *lineEdit_6;
-    QLineEdit *lineEdit_7;
-    QDoubleSpinBox *lineEdit_2;
-    QLineEdit *lineEdit_3;
-    QDoubleSpinBox *lineEdit_5;
-    QLineEdit *lineEdit_4;
-    QLineEdit *lineEdit_9;
-    QLineEdit *lineEdit_8;
+    QLineEdit *lePrimFunc;
+    QLineEdit *leSecondUnit;
+    QLineEdit *leSpeed;
+    QDoubleSpinBox *dsbxPrimValue;
+    QLineEdit *lePrimUnit;
+    QDoubleSpinBox *dsbxSecondValue;
+    QLineEdit *leSecondFunc;
+    QLineEdit *leLevel;
+    QLineEdit *leFreq;
     QPushButton *pushButton_clearTable;
     QTableView *tableView;
     QMenuBar *menuBar;
@@ -105,15 +105,15 @@ public:
 
         gridLayoutConnection->addWidget(pushButton, 1, 1, 1, 2);
 
-        comboBoxMt4080 = new QComboBox(groupBoxConnection);
-        comboBoxMt4080->setObjectName(QString::fromUtf8("comboBoxMt4080"));
+        cbxPortMt4080 = new QComboBox(groupBoxConnection);
+        cbxPortMt4080->setObjectName(QString::fromUtf8("cbxPortMt4080"));
         QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(comboBoxMt4080->sizePolicy().hasHeightForWidth());
-        comboBoxMt4080->setSizePolicy(sizePolicy);
+        sizePolicy.setHeightForWidth(cbxPortMt4080->sizePolicy().hasHeightForWidth());
+        cbxPortMt4080->setSizePolicy(sizePolicy);
 
-        gridLayoutConnection->addWidget(comboBoxMt4080, 0, 2, 1, 1);
+        gridLayoutConnection->addWidget(cbxPortMt4080, 0, 2, 1, 1);
 
         pushButtonStartStopMeas = new QPushButton(groupBoxConnection);
         pushButtonStartStopMeas->setObjectName(QString::fromUtf8("pushButtonStartStopMeas"));
@@ -125,15 +125,15 @@ public:
 
         verticalLayout->addWidget(groupBoxConnection);
 
-        groupBoxSettings = new QGroupBox(centralWidget);
-        groupBoxSettings->setObjectName(QString::fromUtf8("groupBoxSettings"));
-        groupBoxSettings->setCheckable(true);
-        gridLayout_3 = new QGridLayout(groupBoxSettings);
+        grbxSettings = new QGroupBox(centralWidget);
+        grbxSettings->setObjectName(QString::fromUtf8("grbxSettings"));
+        grbxSettings->setCheckable(true);
+        gridLayout_3 = new QGridLayout(grbxSettings);
         gridLayout_3->setSpacing(6);
         gridLayout_3->setContentsMargins(11, 11, 11, 11);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         gridLayout_3->setContentsMargins(6, 6, 6, 6);
-        dsbMinErr = new QDoubleSpinBox(groupBoxSettings);
+        dsbMinErr = new QDoubleSpinBox(grbxSettings);
         dsbMinErr->setObjectName(QString::fromUtf8("dsbMinErr"));
         QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
@@ -147,7 +147,7 @@ public:
 
         gridLayout_3->addWidget(dsbMinErr, 0, 3, 1, 1);
 
-        dsbMin = new QDoubleSpinBox(groupBoxSettings);
+        dsbMin = new QDoubleSpinBox(grbxSettings);
         dsbMin->setObjectName(QString::fromUtf8("dsbMin"));
         sizePolicy1.setHeightForWidth(dsbMin->sizePolicy().hasHeightForWidth());
         dsbMin->setSizePolicy(sizePolicy1);
@@ -158,37 +158,37 @@ public:
 
         gridLayout_3->addWidget(dsbMin, 0, 1, 1, 1);
 
-        lbSettings_3 = new QLabel(groupBoxSettings);
+        lbSettings_3 = new QLabel(grbxSettings);
         lbSettings_3->setObjectName(QString::fromUtf8("lbSettings_3"));
         lbSettings_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         gridLayout_3->addWidget(lbSettings_3, 2, 0, 1, 1);
 
-        label = new QLabel(groupBoxSettings);
+        label = new QLabel(grbxSettings);
         label->setObjectName(QString::fromUtf8("label"));
         label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         gridLayout_3->addWidget(label, 4, 0, 1, 1);
 
-        lbSettings_4 = new QLabel(groupBoxSettings);
+        lbSettings_4 = new QLabel(grbxSettings);
         lbSettings_4->setObjectName(QString::fromUtf8("lbSettings_4"));
         lbSettings_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         gridLayout_3->addWidget(lbSettings_4, 2, 2, 1, 1);
 
-        lbSettings_2 = new QLabel(groupBoxSettings);
+        lbSettings_2 = new QLabel(grbxSettings);
         lbSettings_2->setObjectName(QString::fromUtf8("lbSettings_2"));
         lbSettings_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         gridLayout_3->addWidget(lbSettings_2, 0, 0, 1, 1);
 
-        lbSettings_1 = new QLabel(groupBoxSettings);
+        lbSettings_1 = new QLabel(grbxSettings);
         lbSettings_1->setObjectName(QString::fromUtf8("lbSettings_1"));
         lbSettings_1->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
         gridLayout_3->addWidget(lbSettings_1, 0, 2, 1, 1);
 
-        sbScale = new QSpinBox(groupBoxSettings);
+        sbScale = new QSpinBox(grbxSettings);
         sbScale->setObjectName(QString::fromUtf8("sbScale"));
         sizePolicy1.setHeightForWidth(sbScale->sizePolicy().hasHeightForWidth());
         sbScale->setSizePolicy(sizePolicy1);
@@ -198,7 +198,7 @@ public:
 
         gridLayout_3->addWidget(sbScale, 4, 1, 1, 1);
 
-        dsbMax = new QDoubleSpinBox(groupBoxSettings);
+        dsbMax = new QDoubleSpinBox(grbxSettings);
         dsbMax->setObjectName(QString::fromUtf8("dsbMax"));
         sizePolicy1.setHeightForWidth(dsbMax->sizePolicy().hasHeightForWidth());
         dsbMax->setSizePolicy(sizePolicy1);
@@ -209,7 +209,7 @@ public:
 
         gridLayout_3->addWidget(dsbMax, 2, 1, 1, 1);
 
-        dsbMaxErr = new QDoubleSpinBox(groupBoxSettings);
+        dsbMaxErr = new QDoubleSpinBox(grbxSettings);
         dsbMaxErr->setObjectName(QString::fromUtf8("dsbMaxErr"));
         sizePolicy1.setHeightForWidth(dsbMaxErr->sizePolicy().hasHeightForWidth());
         dsbMaxErr->setSizePolicy(sizePolicy1);
@@ -220,106 +220,106 @@ public:
 
         gridLayout_3->addWidget(dsbMaxErr, 2, 3, 1, 1);
 
-        pbTranses = new QPushButton(groupBoxSettings);
+        pbTranses = new QPushButton(grbxSettings);
         pbTranses->setObjectName(QString::fromUtf8("pbTranses"));
 
         gridLayout_3->addWidget(pbTranses, 4, 2, 1, 1);
 
-        cbxTrans = new QComboBox(groupBoxSettings);
+        cbxTrans = new QComboBox(grbxSettings);
         cbxTrans->setObjectName(QString::fromUtf8("cbxTrans"));
 
         gridLayout_3->addWidget(cbxTrans, 4, 3, 1, 1);
 
 
-        verticalLayout->addWidget(groupBoxSettings);
+        verticalLayout->addWidget(grbxSettings);
 
-        groupBox_mt4080 = new QGroupBox(centralWidget);
-        groupBox_mt4080->setObjectName(QString::fromUtf8("groupBox_mt4080"));
-        groupBox_mt4080->setCheckable(true);
-        gridLayout = new QGridLayout(groupBox_mt4080);
+        grbxMt4080 = new QGroupBox(centralWidget);
+        grbxMt4080->setObjectName(QString::fromUtf8("grbxMt4080"));
+        grbxMt4080->setCheckable(true);
+        gridLayout = new QGridLayout(grbxMt4080);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         gridLayout->setContentsMargins(6, 6, 6, 6);
-        lineEdit_1 = new QLineEdit(groupBox_mt4080);
-        lineEdit_1->setObjectName(QString::fromUtf8("lineEdit_1"));
-        lineEdit_1->setMaximumSize(QSize(100, 16777215));
-        lineEdit_1->setAlignment(Qt::AlignCenter);
+        lePrimFunc = new QLineEdit(grbxMt4080);
+        lePrimFunc->setObjectName(QString::fromUtf8("lePrimFunc"));
+        lePrimFunc->setMaximumSize(QSize(100, 16777215));
+        lePrimFunc->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_1, 2, 0, 1, 1);
+        gridLayout->addWidget(lePrimFunc, 2, 0, 1, 1);
 
-        lineEdit_6 = new QLineEdit(groupBox_mt4080);
-        lineEdit_6->setObjectName(QString::fromUtf8("lineEdit_6"));
-        lineEdit_6->setMaximumSize(QSize(100, 16777215));
-        lineEdit_6->setAlignment(Qt::AlignCenter);
+        leSecondUnit = new QLineEdit(grbxMt4080);
+        leSecondUnit->setObjectName(QString::fromUtf8("leSecondUnit"));
+        leSecondUnit->setMaximumSize(QSize(100, 16777215));
+        leSecondUnit->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_6, 3, 2, 1, 1);
+        gridLayout->addWidget(leSecondUnit, 3, 2, 1, 1);
 
-        lineEdit_7 = new QLineEdit(groupBox_mt4080);
-        lineEdit_7->setObjectName(QString::fromUtf8("lineEdit_7"));
-        lineEdit_7->setMaximumSize(QSize(100, 16777215));
-        lineEdit_7->setAlignment(Qt::AlignCenter);
+        leSpeed = new QLineEdit(grbxMt4080);
+        leSpeed->setObjectName(QString::fromUtf8("leSpeed"));
+        leSpeed->setMaximumSize(QSize(100, 16777215));
+        leSpeed->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_7, 4, 0, 1, 1);
+        gridLayout->addWidget(leSpeed, 4, 0, 1, 1);
 
-        lineEdit_2 = new QDoubleSpinBox(groupBox_mt4080);
-        lineEdit_2->setObjectName(QString::fromUtf8("lineEdit_2"));
+        dsbxPrimValue = new QDoubleSpinBox(grbxMt4080);
+        dsbxPrimValue->setObjectName(QString::fromUtf8("dsbxPrimValue"));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(lineEdit_2->sizePolicy().hasHeightForWidth());
-        lineEdit_2->setSizePolicy(sizePolicy2);
-        lineEdit_2->setAlignment(Qt::AlignCenter);
-        lineEdit_2->setReadOnly(true);
-        lineEdit_2->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        lineEdit_2->setDecimals(3);
-        lineEdit_2->setMaximum(1.000000000000000);
+        sizePolicy2.setHeightForWidth(dsbxPrimValue->sizePolicy().hasHeightForWidth());
+        dsbxPrimValue->setSizePolicy(sizePolicy2);
+        dsbxPrimValue->setAlignment(Qt::AlignCenter);
+        dsbxPrimValue->setReadOnly(true);
+        dsbxPrimValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        dsbxPrimValue->setDecimals(3);
+        dsbxPrimValue->setMaximum(1.000000000000000);
 
-        gridLayout->addWidget(lineEdit_2, 2, 1, 1, 1);
+        gridLayout->addWidget(dsbxPrimValue, 2, 1, 1, 1);
 
-        lineEdit_3 = new QLineEdit(groupBox_mt4080);
-        lineEdit_3->setObjectName(QString::fromUtf8("lineEdit_3"));
-        lineEdit_3->setMaximumSize(QSize(100, 16777215));
-        lineEdit_3->setAlignment(Qt::AlignCenter);
+        lePrimUnit = new QLineEdit(grbxMt4080);
+        lePrimUnit->setObjectName(QString::fromUtf8("lePrimUnit"));
+        lePrimUnit->setMaximumSize(QSize(100, 16777215));
+        lePrimUnit->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_3, 2, 2, 1, 1);
+        gridLayout->addWidget(lePrimUnit, 2, 2, 1, 1);
 
-        lineEdit_5 = new QDoubleSpinBox(groupBox_mt4080);
-        lineEdit_5->setObjectName(QString::fromUtf8("lineEdit_5"));
-        sizePolicy2.setHeightForWidth(lineEdit_5->sizePolicy().hasHeightForWidth());
-        lineEdit_5->setSizePolicy(sizePolicy2);
-        lineEdit_5->setAlignment(Qt::AlignCenter);
-        lineEdit_5->setReadOnly(true);
-        lineEdit_5->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        lineEdit_5->setDecimals(3);
-        lineEdit_5->setMaximum(1.000000000000000);
+        dsbxSecondValue = new QDoubleSpinBox(grbxMt4080);
+        dsbxSecondValue->setObjectName(QString::fromUtf8("dsbxSecondValue"));
+        sizePolicy2.setHeightForWidth(dsbxSecondValue->sizePolicy().hasHeightForWidth());
+        dsbxSecondValue->setSizePolicy(sizePolicy2);
+        dsbxSecondValue->setAlignment(Qt::AlignCenter);
+        dsbxSecondValue->setReadOnly(true);
+        dsbxSecondValue->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        dsbxSecondValue->setDecimals(3);
+        dsbxSecondValue->setMaximum(1.000000000000000);
 
-        gridLayout->addWidget(lineEdit_5, 3, 1, 1, 1);
+        gridLayout->addWidget(dsbxSecondValue, 3, 1, 1, 1);
 
-        lineEdit_4 = new QLineEdit(groupBox_mt4080);
-        lineEdit_4->setObjectName(QString::fromUtf8("lineEdit_4"));
-        lineEdit_4->setMaximumSize(QSize(100, 16777215));
-        lineEdit_4->setAlignment(Qt::AlignCenter);
+        leSecondFunc = new QLineEdit(grbxMt4080);
+        leSecondFunc->setObjectName(QString::fromUtf8("leSecondFunc"));
+        leSecondFunc->setMaximumSize(QSize(100, 16777215));
+        leSecondFunc->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_4, 3, 0, 1, 1);
+        gridLayout->addWidget(leSecondFunc, 3, 0, 1, 1);
 
-        lineEdit_9 = new QLineEdit(groupBox_mt4080);
-        lineEdit_9->setObjectName(QString::fromUtf8("lineEdit_9"));
-        lineEdit_9->setMaximumSize(QSize(100, 16777215));
-        lineEdit_9->setAlignment(Qt::AlignCenter);
+        leLevel = new QLineEdit(grbxMt4080);
+        leLevel->setObjectName(QString::fromUtf8("leLevel"));
+        leLevel->setMaximumSize(QSize(100, 16777215));
+        leLevel->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_9, 4, 2, 1, 1);
+        gridLayout->addWidget(leLevel, 4, 2, 1, 1);
 
-        lineEdit_8 = new QLineEdit(groupBox_mt4080);
-        lineEdit_8->setObjectName(QString::fromUtf8("lineEdit_8"));
-        sizePolicy2.setHeightForWidth(lineEdit_8->sizePolicy().hasHeightForWidth());
-        lineEdit_8->setSizePolicy(sizePolicy2);
-        lineEdit_8->setAlignment(Qt::AlignCenter);
+        leFreq = new QLineEdit(grbxMt4080);
+        leFreq->setObjectName(QString::fromUtf8("leFreq"));
+        sizePolicy2.setHeightForWidth(leFreq->sizePolicy().hasHeightForWidth());
+        leFreq->setSizePolicy(sizePolicy2);
+        leFreq->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(lineEdit_8, 4, 1, 1, 1);
+        gridLayout->addWidget(leFreq, 4, 1, 1, 1);
 
 
-        verticalLayout->addWidget(groupBox_mt4080);
+        verticalLayout->addWidget(grbxMt4080);
 
         pushButton_clearTable = new QPushButton(centralWidget);
         pushButton_clearTable->setObjectName(QString::fromUtf8("pushButton_clearTable"));
@@ -351,14 +351,14 @@ public:
         checkBox->setText(QApplication::translate("MainWindow", "MT4080D:", nullptr));
         pushButton->setText(QApplication::translate("MainWindow", "\320\235\320\260\321\207\320\260\321\202\321\214 \320\276\320\277\321\200\320\276\321\201", nullptr));
         pushButtonStartStopMeas->setText(QApplication::translate("MainWindow", "\320\235\320\260\321\207\320\260\321\202\321\214 \320\270\320\267\320\274\320\265\321\200\320\265\320\275\320\270\320\265", nullptr));
-        groupBoxSettings->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\270\320\267\320\274\320\265\321\200\320\265\320\275\320\270\321\217:", nullptr));
+        grbxSettings->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\270\320\267\320\274\320\265\321\200\320\265\320\275\320\270\321\217:", nullptr));
         lbSettings_3->setText(QApplication::translate("MainWindow", "Max:", nullptr));
         label->setText(QApplication::translate("MainWindow", "Scale:", nullptr));
         lbSettings_4->setText(QApplication::translate("MainWindow", "Max Error:", nullptr));
         lbSettings_2->setText(QApplication::translate("MainWindow", "Min:", nullptr));
         lbSettings_1->setText(QApplication::translate("MainWindow", "Min Error:", nullptr));
         pbTranses->setText(QApplication::translate("MainWindow", "\320\242\321\200\320\260\320\275\321\201\321\213", nullptr));
-        groupBox_mt4080->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 MT4080D", nullptr));
+        grbxMt4080->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 MT4080D", nullptr));
         pushButton_clearTable->setText(QApplication::translate("MainWindow", "\320\236\321\202\321\207\320\270\321\201\321\202\320\270\321\202\321\214 \321\202\320\260\320\261\320\273\320\270\321\206\321\203", nullptr));
         Q_UNUSED(MainWindow);
     } // retranslateUi

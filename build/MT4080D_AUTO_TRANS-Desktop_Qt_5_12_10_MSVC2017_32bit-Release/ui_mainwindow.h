@@ -15,8 +15,10 @@
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDoubleSpinBox>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
@@ -24,6 +26,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpinBox>
+#include <QtWidgets/QSplitter>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QVBoxLayout>
@@ -43,16 +46,18 @@ public:
     QComboBox *cbxPortMt4080;
     QPushButton *pushButtonStartStopMeas;
     QGroupBox *grbxSettings;
-    QGridLayout *gridLayout_3;
-    QDoubleSpinBox *dsbMinErr;
+    QHBoxLayout *horizontalLayout;
+    QFormLayout *formLayout;
+    QLabel *lbSettings_2;
     QDoubleSpinBox *dsbMin;
     QLabel *lbSettings_3;
-    QLabel *label;
-    QLabel *lbSettings_4;
-    QLabel *lbSettings_2;
-    QLabel *lbSettings_1;
-    QSpinBox *sbScale;
     QDoubleSpinBox *dsbMax;
+    QLabel *label;
+    QSpinBox *sbScale;
+    QFormLayout *formLayout_2;
+    QLabel *lbSettings_1;
+    QDoubleSpinBox *dsbMinErr;
+    QLabel *lbSettings_4;
     QDoubleSpinBox *dsbMaxErr;
     QPushButton *pbTranses;
     QComboBox *cbxTrans;
@@ -68,6 +73,7 @@ public:
     QLineEdit *leLevel;
     QLineEdit *leFreq;
     QPushButton *pushButton_clearTable;
+    QSplitter *splitter;
     QTableView *tableView;
     QMenuBar *menuBar;
     QStatusBar *statusBar;
@@ -83,6 +89,7 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalLayout->setContentsMargins(6, 6, 6, 6);
         groupBoxConnection = new QGroupBox(centralWidget);
         groupBoxConnection->setObjectName(QString::fromUtf8("groupBoxConnection"));
         groupBoxConnection->setCheckable(true);
@@ -128,27 +135,26 @@ public:
         grbxSettings = new QGroupBox(centralWidget);
         grbxSettings->setObjectName(QString::fromUtf8("grbxSettings"));
         grbxSettings->setCheckable(true);
-        gridLayout_3 = new QGridLayout(grbxSettings);
-        gridLayout_3->setSpacing(6);
-        gridLayout_3->setContentsMargins(11, 11, 11, 11);
-        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        gridLayout_3->setContentsMargins(6, 6, 6, 6);
-        dsbMinErr = new QDoubleSpinBox(grbxSettings);
-        dsbMinErr->setObjectName(QString::fromUtf8("dsbMinErr"));
-        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(dsbMinErr->sizePolicy().hasHeightForWidth());
-        dsbMinErr->setSizePolicy(sizePolicy1);
-        dsbMinErr->setReadOnly(false);
-        dsbMinErr->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        dsbMinErr->setDecimals(3);
-        dsbMinErr->setMaximum(1000000.000000000000000);
+        horizontalLayout = new QHBoxLayout(grbxSettings);
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalLayout->setContentsMargins(-1, 6, 6, 6);
+        formLayout = new QFormLayout();
+        formLayout->setSpacing(6);
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setLabelAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        lbSettings_2 = new QLabel(grbxSettings);
+        lbSettings_2->setObjectName(QString::fromUtf8("lbSettings_2"));
+        lbSettings_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
-        gridLayout_3->addWidget(dsbMinErr, 0, 3, 1, 1);
+        formLayout->setWidget(0, QFormLayout::LabelRole, lbSettings_2);
 
         dsbMin = new QDoubleSpinBox(grbxSettings);
         dsbMin->setObjectName(QString::fromUtf8("dsbMin"));
+        QSizePolicy sizePolicy1(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(dsbMin->sizePolicy().hasHeightForWidth());
         dsbMin->setSizePolicy(sizePolicy1);
         dsbMin->setReadOnly(false);
@@ -156,47 +162,13 @@ public:
         dsbMin->setDecimals(3);
         dsbMin->setMaximum(1000000.000000000000000);
 
-        gridLayout_3->addWidget(dsbMin, 0, 1, 1, 1);
+        formLayout->setWidget(0, QFormLayout::FieldRole, dsbMin);
 
         lbSettings_3 = new QLabel(grbxSettings);
         lbSettings_3->setObjectName(QString::fromUtf8("lbSettings_3"));
         lbSettings_3->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
 
-        gridLayout_3->addWidget(lbSettings_3, 2, 0, 1, 1);
-
-        label = new QLabel(grbxSettings);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        gridLayout_3->addWidget(label, 4, 0, 1, 1);
-
-        lbSettings_4 = new QLabel(grbxSettings);
-        lbSettings_4->setObjectName(QString::fromUtf8("lbSettings_4"));
-        lbSettings_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        gridLayout_3->addWidget(lbSettings_4, 2, 2, 1, 1);
-
-        lbSettings_2 = new QLabel(grbxSettings);
-        lbSettings_2->setObjectName(QString::fromUtf8("lbSettings_2"));
-        lbSettings_2->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        gridLayout_3->addWidget(lbSettings_2, 0, 0, 1, 1);
-
-        lbSettings_1 = new QLabel(grbxSettings);
-        lbSettings_1->setObjectName(QString::fromUtf8("lbSettings_1"));
-        lbSettings_1->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
-
-        gridLayout_3->addWidget(lbSettings_1, 0, 2, 1, 1);
-
-        sbScale = new QSpinBox(grbxSettings);
-        sbScale->setObjectName(QString::fromUtf8("sbScale"));
-        sizePolicy1.setHeightForWidth(sbScale->sizePolicy().hasHeightForWidth());
-        sbScale->setSizePolicy(sizePolicy1);
-        sbScale->setButtonSymbols(QAbstractSpinBox::NoButtons);
-        sbScale->setMinimum(-10);
-        sbScale->setMaximum(10);
-
-        gridLayout_3->addWidget(sbScale, 4, 1, 1, 1);
+        formLayout->setWidget(1, QFormLayout::LabelRole, lbSettings_3);
 
         dsbMax = new QDoubleSpinBox(grbxSettings);
         dsbMax->setObjectName(QString::fromUtf8("dsbMax"));
@@ -207,7 +179,53 @@ public:
         dsbMax->setDecimals(3);
         dsbMax->setMaximum(1000000.000000000000000);
 
-        gridLayout_3->addWidget(dsbMax, 2, 1, 1, 1);
+        formLayout->setWidget(1, QFormLayout::FieldRole, dsbMax);
+
+        label = new QLabel(grbxSettings);
+        label->setObjectName(QString::fromUtf8("label"));
+        label->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        formLayout->setWidget(2, QFormLayout::LabelRole, label);
+
+        sbScale = new QSpinBox(grbxSettings);
+        sbScale->setObjectName(QString::fromUtf8("sbScale"));
+        sizePolicy1.setHeightForWidth(sbScale->sizePolicy().hasHeightForWidth());
+        sbScale->setSizePolicy(sizePolicy1);
+        sbScale->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        sbScale->setMinimum(-10);
+        sbScale->setMaximum(10);
+
+        formLayout->setWidget(2, QFormLayout::FieldRole, sbScale);
+
+
+        horizontalLayout->addLayout(formLayout);
+
+        formLayout_2 = new QFormLayout();
+        formLayout_2->setSpacing(6);
+        formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
+        formLayout_2->setLabelAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+        lbSettings_1 = new QLabel(grbxSettings);
+        lbSettings_1->setObjectName(QString::fromUtf8("lbSettings_1"));
+        lbSettings_1->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        formLayout_2->setWidget(0, QFormLayout::LabelRole, lbSettings_1);
+
+        dsbMinErr = new QDoubleSpinBox(grbxSettings);
+        dsbMinErr->setObjectName(QString::fromUtf8("dsbMinErr"));
+        sizePolicy1.setHeightForWidth(dsbMinErr->sizePolicy().hasHeightForWidth());
+        dsbMinErr->setSizePolicy(sizePolicy1);
+        dsbMinErr->setReadOnly(false);
+        dsbMinErr->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        dsbMinErr->setDecimals(3);
+        dsbMinErr->setMaximum(1000000.000000000000000);
+
+        formLayout_2->setWidget(0, QFormLayout::FieldRole, dsbMinErr);
+
+        lbSettings_4 = new QLabel(grbxSettings);
+        lbSettings_4->setObjectName(QString::fromUtf8("lbSettings_4"));
+        lbSettings_4->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
+
+        formLayout_2->setWidget(1, QFormLayout::LabelRole, lbSettings_4);
 
         dsbMaxErr = new QDoubleSpinBox(grbxSettings);
         dsbMaxErr->setObjectName(QString::fromUtf8("dsbMaxErr"));
@@ -218,17 +236,20 @@ public:
         dsbMaxErr->setDecimals(3);
         dsbMaxErr->setMaximum(1000000.000000000000000);
 
-        gridLayout_3->addWidget(dsbMaxErr, 2, 3, 1, 1);
+        formLayout_2->setWidget(1, QFormLayout::FieldRole, dsbMaxErr);
 
         pbTranses = new QPushButton(grbxSettings);
         pbTranses->setObjectName(QString::fromUtf8("pbTranses"));
 
-        gridLayout_3->addWidget(pbTranses, 4, 2, 1, 1);
+        formLayout_2->setWidget(2, QFormLayout::LabelRole, pbTranses);
 
         cbxTrans = new QComboBox(grbxSettings);
         cbxTrans->setObjectName(QString::fromUtf8("cbxTrans"));
 
-        gridLayout_3->addWidget(cbxTrans, 4, 3, 1, 1);
+        formLayout_2->setWidget(2, QFormLayout::FieldRole, cbxTrans);
+
+
+        horizontalLayout->addLayout(formLayout_2);
 
 
         verticalLayout->addWidget(grbxSettings);
@@ -326,10 +347,14 @@ public:
 
         verticalLayout->addWidget(pushButton_clearTable);
 
-        tableView = new QTableView(centralWidget);
+        splitter = new QSplitter(centralWidget);
+        splitter->setObjectName(QString::fromUtf8("splitter"));
+        splitter->setOrientation(Qt::Vertical);
+        tableView = new QTableView(splitter);
         tableView->setObjectName(QString::fromUtf8("tableView"));
+        splitter->addWidget(tableView);
 
-        verticalLayout->addWidget(tableView);
+        verticalLayout->addWidget(splitter);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -352,11 +377,11 @@ public:
         pushButton->setText(QApplication::translate("MainWindow", "\320\235\320\260\321\207\320\260\321\202\321\214 \320\276\320\277\321\200\320\276\321\201", nullptr));
         pushButtonStartStopMeas->setText(QApplication::translate("MainWindow", "\320\235\320\260\321\207\320\260\321\202\321\214 \320\270\320\267\320\274\320\265\321\200\320\265\320\275\320\270\320\265", nullptr));
         grbxSettings->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\270\320\267\320\274\320\265\321\200\320\265\320\275\320\270\321\217:", nullptr));
+        lbSettings_2->setText(QApplication::translate("MainWindow", "Min:", nullptr));
         lbSettings_3->setText(QApplication::translate("MainWindow", "Max:", nullptr));
         label->setText(QApplication::translate("MainWindow", "Scale:", nullptr));
-        lbSettings_4->setText(QApplication::translate("MainWindow", "Max Error:", nullptr));
-        lbSettings_2->setText(QApplication::translate("MainWindow", "Min:", nullptr));
         lbSettings_1->setText(QApplication::translate("MainWindow", "Min Error:", nullptr));
+        lbSettings_4->setText(QApplication::translate("MainWindow", "Max Error:", nullptr));
         pbTranses->setText(QApplication::translate("MainWindow", "\320\242\321\200\320\260\320\275\321\201\321\213", nullptr));
         grbxMt4080->setTitle(QApplication::translate("MainWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 MT4080D", nullptr));
         pushButton_clearTable->setText(QApplication::translate("MainWindow", "\320\236\321\202\321\207\320\270\321\201\321\202\320\270\321\202\321\214 \321\202\320\260\320\261\320\273\320\270\321\206\321\203", nullptr));

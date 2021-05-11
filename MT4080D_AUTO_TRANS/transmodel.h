@@ -61,7 +61,7 @@ public:
     Q_ENUM(ColumKey)
     static QString toColumKeyName(int c);
 
-    static const inline QString headers[] = {
+    static inline const QString headers[]{
         "№",
         "НКГЖ",
         "Марки-\nровка",

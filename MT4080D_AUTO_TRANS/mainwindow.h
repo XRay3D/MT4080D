@@ -42,6 +42,8 @@ private slots:
 
     void on_pbTranses_clicked();
 
+    void on_tableView_customContextMenuRequested(const QPoint &pos);
+
 private:
     Ui::MainWindow* ui;
 
@@ -69,7 +71,7 @@ private:
 
     void ConnectSignals();
     void CreateChart();
-    void contextMenuEvent(QContextMenuEvent* event);
+    //    void contextMenuEvent(QContextMenuEvent* event);
 
     void readSettings();
     void writeSettings();
@@ -77,13 +79,13 @@ private:
     void dsb(double);
     void reset();
 
-    /*typedef*/ struct border_t {
+    struct Border {
         double max;
         double maxErr;
         double min;
         double minErr;
         int fl;
-    } /*border_t*/ border;
+    } border;
 
     //    border_t border;
 };

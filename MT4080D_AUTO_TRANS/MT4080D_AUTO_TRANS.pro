@@ -1,7 +1,5 @@
 #-------------------------------------------------
-#
 # Project created by QtCreator 2016-03-31T14:36:09
-#
 #-------------------------------------------------
 
 QT += core gui serialport multimedia charts
@@ -20,26 +18,31 @@ win32:RC_FILE = main_icon/myapp.rc
 DESTDIR = $$_PRO_FILE_PWD_/../bin
 
 include(../MT4080/mt4080.pri)
-INCLUDEPATH += ../MT4080
-INCLUDEPATH += pfr/include
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-        model.cpp \
-        transmodel.cpp
+INCLUDEPATH += \
+    ../MT4080 \
+    pfr/include
 
-HEADERS += mainwindow.h \
-        magicgetruntime.h \
-        model.h \
-        transmodel.h
+SOURCES += \
+    main.cpp\
+    mainwindow.cpp \
+    model.cpp \
+    transmodel.cpp
 
-FORMS   += mainwindow.ui
+HEADERS += \
+    mainwindow.h \
+    magicgetruntime.h \
+    model.h \
+    transmodel.h
+
+FORMS   += \
+    mainwindow.ui
 
 DISTFILES += \
-	myapp.ico \
-	myapp.xcf \
-	myapp.rc \
-	MT4080D.xlsx
+    myapp.ico \
+    myapp.xcf \
+    myapp.rc \
+    MT4080D.xlsx
 
 RESOURCES += \
-	res.qrc
+    res.qrc

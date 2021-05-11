@@ -17,6 +17,7 @@
 #include <QElapsedTimer>
 #include <QHeaderView>
 #include <QScrollBar>
+#include <QShortcut>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
 #include <ranges>
@@ -43,7 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
     ui->setupUi(this);
 
     ui->tableView->setModel(model = new Model(border.min, border.max));
-
+    ui->tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     //    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 
     ui->tableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -52,6 +53,10 @@ MainWindow::MainWindow(QWidget* parent)
     ui->cbxTrans->setModel(new TransModel(ui->cbxTrans));
     ui->cbxTrans->setModelColumn(2);
     ui->cbxTrans->view()->setItemDelegate(new PopupItemDelegate(ui->cbxTrans));
+
+    auto shc = new QShortcut(this);
+    shc->setKey(QKeySequence::Copy);
+    connect(shc, &QShortcut::activated, [this]() { model->copy(); });
     //    ui->cbxTrans->setStyleSheet("QComboBox {"
     //                                "   padding-left: 2px;"
     //                                "   text-align: center;"
@@ -71,7 +76,6 @@ MainWindow::MainWindow(QWidget* parent)
     mt4080Thread.start();
 
     readSettings();
-    //on_pbTranses_clicked();
 }
 
 MainWindow::~MainWindow() {
@@ -121,6 +125,7 @@ void MainWindow::writeSettings() {
     settings.setValue("dsbMin", ui->dsbMin->value());
     settings.setValue("dsbMinErr", ui->dsbMinErr->value());
     settings.setValue("sbScale", ui->sbScale->value());
+    settings.setValue("splitter", ui->splitter->saveState());
 
     settings.endGroup();
 }
@@ -192,6 +197,8 @@ void MainWindow::readSettings() {
     ui->dsbMin->setValue(settings.value("dsbMin").toDouble());
     ui->dsbMinErr->setValue(settings.value("dsbMinErr").toDouble());
     ui->sbScale->setValue(settings.value("sbScale").toInt());
+
+    ui->splitter->restoreState(settings.value("splitter").toByteArray());
 
     settings.endGroup();
 }
@@ -321,17 +328,17 @@ void MainWindow::CreateChart() {
     chartView->setRenderHint(QPainter::Antialiasing, true);
     chartView->chart()->legend()->hide();
 
-    ui->verticalLayout->addWidget(chartView);
+    ui->splitter->addWidget(chartView);
 }
 
-void MainWindow::contextMenuEvent(QContextMenuEvent* event) {
-    if(model && ui->tableView->geometry().contains(event->pos()) && ui->tableView->model()->rowCount()) {
-        QMenu menu(this);
-        menu.addAction(
-            tr("Копировать данные"), [this]() { model->copy(); }, QKeySequence::Copy);
-        menu.exec(event->globalPos());
-    }
-}
+//void MainWindow::contextMenuEvent(QContextMenuEvent* event) {
+//    if(model && ui->tableView->geometry().contains(event->pos()) && ui->tableView->model()->rowCount()) {
+//        QMenu menu(this);
+//        menu.addAction(
+//            tr("Копировать данные"), [this]() { model->copy(); }, QKeySequence::Copy);
+//        menu.exec(event->globalPos());
+//    }
+//}
 
 void MainWindow::primary(double val) {
     if(!mutex.tryLock())
@@ -455,4 +462,13 @@ void MainWindow::on_pbTranses_clicked() {
     connect(tv->findChild<QAbstractButton*>(), &QAbstractButton::clicked, [tv] { tv->sortByColumn(0, Qt::AscendingOrder); });
     dialog.resize(1280, 720);
     dialog.exec();
+}
+
+void MainWindow::on_tableView_customContextMenuRequested(const QPoint& pos) {
+    //        if(model && ui->tableView->geometry().contains(event->pos()) && ui->tableView->model()->rowCount()) {
+    QMenu menu(this);
+    menu.addAction(
+        "Копировать данные", [this]() { model->copy(); }, QKeySequence::Copy);
+    menu.exec(ui->tableView->viewport()->mapToGlobal(pos));
+    //        }
 }

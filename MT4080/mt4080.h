@@ -264,6 +264,12 @@ private:
     //    CPRP
     //    MODE?
     //    1KHz 1Vrms SLOW CpRp uF Ohm (return value)
+
+    // QObject interface
+    int timerId {};
+
+protected:
+    void timerEvent(QTimerEvent* event) override;
 };
 
 #endif // MT4080_H

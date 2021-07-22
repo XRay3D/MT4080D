@@ -1,7 +1,8 @@
 #include "mt4080.h"
 #include <QDebug>
+#include <QTimerEvent>
 
-const int id1 = qRegisterMetaType<MT4080::Display>("Display_t");
+const int id1 = qRegisterMetaType<MT4080::Display>("Display");
 
 MT4080::MT4080(QObject* parent)
     : QObject(parent)
@@ -16,11 +17,20 @@ MT4080::~MT4080() { port.close(); }
 
 bool MT4080::open(const QString& portName)
 {
+    if (timerId)
+        killTimer(timerId);
+    timerId = startTimer(10);
     port.setPortName(portName);
     return port.open(QSerialPort::ReadOnly);
 }
 
-void MT4080::close() { port.close(); }
+void MT4080::close()
+{
+    if (timerId)
+        killTimer(timerId);
+    timerId = {};
+    port.close();
+}
 
 bool MT4080::CheckData(const QByteArray& data, int begin, int end)
 {
@@ -111,4 +121,10 @@ void MT4080::UpdateParameters(const QByteArray& data)
 
     m_display.speed = slSpeed[rawDisplay.measureSpeed];
     m_display.speed += slRelative[rawDisplay.relative];
+}
+
+void MT4080::timerEvent(QTimerEvent* event)
+{
+    if (event->timerId() == timerId)
+        ReadyRead();
 }

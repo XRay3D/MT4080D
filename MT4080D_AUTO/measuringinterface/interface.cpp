@@ -9,9 +9,8 @@ QSemaphore semafore;
 Relay* MI::rel = nullptr;
 MT4080* MI::mt = nullptr;
 
-MI::MI()
-{
-    if (!semafore.available()) {
+MI::MI() {
+    if(!semafore.available()) {
         rel = new Relay;
         rel->moveToThread(&thread);
         thread.connect(&thread, &QThread::finished, rel, &QObject::deleteLater);
@@ -25,10 +24,9 @@ MI::MI()
     semafore.release();
 }
 
-MI::~MI()
-{
+MI::~MI() {
     semafore.acquire();
-    if (!semafore.available()) {
+    if(!semafore.available()) {
         thread.quit();
         thread.wait();
     }

@@ -20,20 +20,19 @@ public:
     ~MainWindow();
 
 private slots:
-    void Display(const MT4080::Display_t& val);
+    void display(const MT4080::Display& val);
     void on_pbStartMeas_clicked(bool checked);
-    void Primary(double val);
+    void primary(double val);
     void on_pbPing_clicked(bool checked);
 
 private:
     Ui::MainWindow* ui;
-    int Counter;
-    int Pos;
+    int counter;
+    int pos;
 
     void writeSettings();
     void readSettings();
 
-    void MessageMeasureEnded();
     void MessageErrorRelaySwitch();
     QIcon start;
     QIcon stop;

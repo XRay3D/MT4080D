@@ -1,26 +1,23 @@
-#ifndef MODEL_COEFFICIENTS_H
-#define MODEL_COEFFICIENTS_H
+#pragma once
+
+#include "mytable.h"
 
 #include <QAbstractTableModel>
+#include <QColor>
 
 class MyModel : public QAbstractTableModel {
     Q_OBJECT
 public:
     explicit MyModel(QObject* parent = nullptr);
     ~MyModel();
-    void stateChanged(const QMap<int, bool>& enabled, int orientation);
+    void stateChanged(const BoolMap &enabled, int orientation);
     void setChData(double value, int row, int column);
     double getChData(int row, int column);
     inline bool enabled(int row, int column) const { return m_rowsEnabled[row] && m_columnsEnabled[column]; }
     inline bool enabled(const QModelIndex& index) const { return m_rowsEnabled[index.row()] && m_columnsEnabled[index.column()]; }
-    QMap<int, bool> rowsEnabled() const;
-
-signals:
-
-public slots:
+    BoolMap rowsEnabled() const;
 
     // QAbstractItemModel interface
-public:
     int rowCount(const QModelIndex& parent) const override;
     int columnCount(const QModelIndex& parent) const override;
     QVariant data(const QModelIndex& index, int role) const override;
@@ -35,12 +32,11 @@ private:
     };
 
     double m_data[Columns][Rows];
+    QColor m_color[Columns][Rows];
 
-    QMap<int, bool> m_rowsEnabled;
-    QMap<int, bool> m_columnsEnabled;
+    mutable BoolMap m_rowsEnabled;
+    mutable BoolMap m_columnsEnabled;
 
     inline bool checkRow(int value) const { return -1 < value && value < Rows; }
     inline bool checkCol(int value) const { return -1 < value && value < Columns; }
 };
-
-#endif // MODEL_COEFFICIENTS_H

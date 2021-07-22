@@ -35,49 +35,46 @@ public:
 
 private slots:
     void display(const MT4080::Display& val);
-    void primary(double val);
-
-    void on_checkBox_clicked(bool checked);
     void on_cbxTrans_currentIndexChanged(int index);
-
+    void on_checkBox_clicked(bool checked);
     void on_pbTranses_clicked();
-
-    void on_tableView_customContextMenuRequested(const QPoint &pos);
+    void on_tableView_customContextMenuRequested(const QPoint& pos);
+    void primary(double val);
 
 private:
     Ui::MainWindow* ui;
 
+    double barMax = 0.0;
+    double barMin = 0.0;
     double lastValue = 0.0;
     double value = 0.0;
-    double barMin = 0.0;
-    double barMax = 0.0;
 
     Model* model;
     MT4080* mt4080;
 
     QIcon start;
     QIcon stop;
+
     QMutex mutex;
+
     QSound no;
     QSound yes;
 
     QtCharts::QBarCategoryAxis* xAxis;
-    QtCharts::QValueAxis* yAxis;
     QtCharts::QBarSet* set;
+    QtCharts::QValueAxis* yAxis;
 
     QThread mt4080Thread;
     QTimer timer;
-    QVector<double> values;
+    std::vector<double> values;
 
-    void ConnectSignals();
-    void CreateChart();
-    //    void contextMenuEvent(QContextMenuEvent* event);
-
-    void readSettings();
-    void writeSettings();
-    void UpdateChart();
+    void connectUi();
+    void createChart();
     void dsb(double);
+    void readSettings();
     void reset();
+    void updateChart();
+    void writeSettings();
 
     struct Border {
         double max;

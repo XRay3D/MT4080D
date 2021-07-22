@@ -6,6 +6,14 @@
 template <typename T, size_t N>
 int s(T (&)[N]) { return N; }
 
+template <auto out_min, auto out_max>
+auto map(auto x, auto in_min, auto in_max)
+{
+    x = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    qDebug() << __FUNCTION__ << x;
+    return std::clamp(x, std::min(out_min, out_max), std::max(out_min, out_max));
+}
+
 MyModel::MyModel(QObject* parent)
     : QAbstractTableModel(parent)
 {
@@ -15,8 +23,21 @@ MyModel::MyModel(QObject* parent)
     QFile file("data.bin");
     if (!file.open(QIODevice::ReadOnly))
         return;
-    QByteArray d(file.readAll());
-    memcpy(m_data, d.constData(), d.size());
+    file.read(reinterpret_cast<char*>(m_data), sizeof(m_data));
+
+    for (int c {}; auto&& data : m_data) {
+        auto [min, max] = std::ranges::minmax(data);
+        //qDebug() << min << max;
+        for (int r {}; r < Rows; ++r) {
+            if (data[r] != 0.0) {
+                int color = map<240.0, 0.0>(data[r], min, max);
+                m_color[c][r] = QColor::fromHsv(color, 127, 255);
+            } else {
+                m_color[c][r] = Qt::white;
+            }
+        }
+        ++c;
+    }
 }
 
 MyModel::~MyModel()
@@ -27,7 +48,7 @@ MyModel::~MyModel()
     file.write(reinterpret_cast<const char*>(m_data), sizeof(m_data));
 }
 
-void MyModel::stateChanged(const QMap<int, bool>& enabled, int orientation)
+void MyModel::stateChanged(const BoolMap& enabled, int orientation)
 {
     if (orientation == Qt::Vertical)
         m_rowsEnabled = enabled;
@@ -54,6 +75,12 @@ void MyModel::setChData(double value, int row, int column)
     if (checkCol(column) && checkRow(row) && enabled(row, column)) {
         m_data[column][row] = value;
         dataChanged(index, index, { Qt::DisplayRole });
+    }
+    auto [min, max] = std::ranges::minmax(m_data[column]);
+    qDebug() << min << max;
+    for (int r {}; r < Rows; ++r) {
+        int color = map<240.0, 0.0>(m_data[column][r], min, max);
+        m_color[column][r] = QColor::fromHsv(color, 127, 255);
     }
 }
 
@@ -84,7 +111,7 @@ QVariant MyModel::data(const QModelIndex& index, int role) const
     case Qt::TextAlignmentRole:
         return Qt::AlignCenter;
     case Qt::BackgroundColorRole:
-        return enabled(index) ? QVariant() : QColor(240, 240, 240);
+        return enabled(index) ? m_color[index.column()][index.row()] : QColor(240, 240, 240);
     default:
         return QVariant();
     }
@@ -154,7 +181,7 @@ Qt::ItemFlags MyModel::flags(const QModelIndex& index) const
     return enabled(index) ? Qt::ItemIsEnabled : Qt::NoItemFlags;
 }
 
-QMap<int, bool> MyModel::rowsEnabled() const
+BoolMap MyModel::rowsEnabled() const
 {
     return m_rowsEnabled;
 }

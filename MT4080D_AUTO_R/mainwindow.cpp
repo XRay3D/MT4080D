@@ -11,9 +11,8 @@
 #include <generator.hpp>
 //#include <ranges>
 
-cppcoro::generator<const int> g(bool init = false)
-{
-    for (auto [key, _] : MainWindow::selected) {
+cppcoro::generator<const int> g(bool init = false) {
+    for(auto [key, _] : MainWindow::selected) {
         co_yield key;
     }
 }
@@ -26,9 +25,9 @@ MainWindow::MainWindow(QWidget* parent)
 
 {
     ui->setupUi(this);
-    for (QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
-        ui->cbxMt4080->addItem(info.portName());
-        ui->cbxRelay->addItem(info.portName());
+    for(QSerialPortInfo& info : QSerialPortInfo::availablePorts()) {
+        ui->cbxPortMeter->addItem(info.portName());
+        ui->cbxPortRelay->addItem(info.portName());
     }
 
     //    connect(MI::mt, &MT4080::Display, this, &MainWindow::Display);
@@ -36,7 +35,7 @@ MainWindow::MainWindow(QWidget* parent)
 
     connect(MI::scpi, &SCPI::measureReady, this, &MainWindow::display);
 
-    connect(this, &MainWindow::startMeasure, MI::scpi, &SCPI::getDcVoltage/*getResistance4W*/, Qt::QueuedConnection);
+    connect(this, &MainWindow::startMeasure, MI::scpi, &SCPI::getDcVoltage /*getResistance4W*/, Qt::QueuedConnection);
 
     connect(ui->hsRelPos, &QSlider::valueChanged, MI::rel, &Relay::SetEnabledRelay);
     connect(ui->hsRelPos, &QSlider::valueChanged, [&](int value) { ui->label_rel->setText(QString("Поз. %1:").arg(value)); });
@@ -59,8 +58,8 @@ MainWindow::MainWindow(QWidget* parent)
     });
 
     connect(ui->gbxSettings, &QGroupBox::clicked, [&](bool checked) {
-        for (auto obj : ui->gbxSettings->children()) {
-            if (auto w = qobject_cast<QWidget*>(obj); w)
+        for(auto obj : ui->gbxSettings->children()) {
+            if(auto w = qobject_cast<QWidget*>(obj); w)
                 w->setVisible(checked);
         }
         ui->gridLayoutSettings->setMargin(checked ? 6 : 3);
@@ -69,10 +68,10 @@ MainWindow::MainWindow(QWidget* parent)
     connect(ui->gbxConnection, &QGroupBox::clicked, [&](bool checked) {
         ui->label_5->setVisible(checked);
         ui->label_6->setVisible(checked);
-        ui->cbxMt4080->setVisible(checked);
-        ui->cbxRelay->setVisible(checked);
+        ui->cbxPortMeter->setVisible(checked);
+        ui->cbxPortRelay->setVisible(checked);
         ui->pbPing->setVisible(checked);
-        if (checked) {
+        if(checked) {
             ui->gridLayoutConnection->setMargin(6);
             ui->gbxConnection->setTitle("Настройка связи:");
         } else {
@@ -88,15 +87,13 @@ MainWindow::MainWindow(QWidget* parent)
     readSettings();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     on_pbPing_clicked(false);
     writeSettings();
     delete ui;
 }
 
-void MainWindow::writeSettings()
-{
+void MainWindow::writeSettings() {
     QSettings settings;
 
     settings.beginGroup("MainWindow");
@@ -105,8 +102,8 @@ void MainWindow::writeSettings()
 
     settings.setValue("WindowState", (int)windowState());
 
-    settings.setValue("cbxMt4080", ui->cbxMt4080->currentIndex());
-    settings.setValue("cbxRelay", ui->cbxRelay->currentIndex());
+    settings.setValue("cbxPortMeter", ui->cbxPortMeter->currentText());
+    settings.setValue("cbxPortRelay", ui->cbxPortRelay->currentText());
 
     settings.setValue("gbxMt4080", ui->gbxMt4080->isChecked());
     settings.setValue("gbxSettings", ui->gbxSettings->isChecked());
@@ -118,8 +115,7 @@ void MainWindow::writeSettings()
     settings.endGroup();
 }
 
-void MainWindow::readSettings()
-{
+void MainWindow::readSettings() {
     QSettings settings;
 
     settings.beginGroup("MainWindow");
@@ -128,8 +124,9 @@ void MainWindow::readSettings()
 
     setWindowState((Qt::WindowState)settings.value("WindowState").toInt());
 
-    ui->cbxMt4080->setCurrentIndex(settings.value("cbxMt4080").toInt());
-    ui->cbxRelay->setCurrentIndex(settings.value("cbxRelay").toInt());
+    ui->cbxPortMeter->setCurrentText(settings.value("cbxPortMeter").toString());
+    ui->cbxPortRelay->setCurrentText(settings.value("cbxPortRelay").toString());
+
     emit ui->gbxMt4080->clicked(settings.value("gbxMt4080").toBool());
     emit ui->gbxSettings->clicked(settings.value("gbxSettings").toBool());
 
@@ -140,9 +137,8 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
-void MainWindow::showMessage(MainWindow::Message msg)
-{
-    switch (msg) {
+void MainWindow::showMessage(MainWindow::Message msg) {
+    switch(msg) {
     case MeasureEnded:
         QMessageBox::information(this, "Сообщение", "Измерение закончилось!", tr("Хорошо"));
         break;
@@ -158,30 +154,29 @@ void MainWindow::showMessage(MainWindow::Message msg)
     }
 }
 
-void MainWindow::on_pbStartMeas_clicked(bool checked)
-{
+void MainWindow::on_pbStartMeas_clicked(bool checked) {
     do {
-        if (ui->pbPing->isChecked()) {
-            if (checked) {
+        if(ui->pbPing->isChecked()) {
+            if(checked) {
                 currentPos = counter = sideMessageBox = 0;
 
                 selected = ui->tableView->IsChecked();
-                for (int i = 0; i < 58; ++i) {
-                    if (!selected[i])
+                for(int i = 0; i < 58; ++i) {
+                    if(!selected[i])
                         selected.erase(i);
                 }
                 selected.erase(-1);
 
-                if (!selected.size()) {
+                if(!selected.size()) {
                     on_pbStartMeas_clicked(false);
                     QMessageBox::critical(this, "Ошибка!", "Не выбрана ни одна позиция!", tr("Плохо!"));
                     checked = false;
                     break;
                 }
 
-                if (auto first = selected.begin()->first + 1; first < 30)
+                if(auto first = selected.begin()->first + 1; first < 30)
                     showMessage(Side_01_29);
-                else if (first > 29)
+                else if(first > 29)
                     showMessage(Side_30_58);
 
                 disconnect(ui->hsRelPos, &QSlider::valueChanged, MI::rel, &Relay::SetEnabledRelay);
@@ -194,69 +189,67 @@ void MainWindow::on_pbStartMeas_clicked(bool checked)
         } else {
             checked = false;
         }
-    } while (0);
+    } while(0);
     ui->tableView->SetEnabledCheckBoxes(!checked);
     ui->pbStartMeas->setChecked(checked);
     ui->pbStartMeas->setText(checked ? "Остановить измерение" : "Начать измерение");
     ui->pbStartMeas->setIcon(checked ? stop : start);
 }
 
-void MainWindow::primary(double val)
-{
+void MainWindow::primary(double val) {
     val *= pow(10.0, ui->spinBox->value());
 
     //qDebug() << *g().begin() + counter;
 
-    if (mutex.tryLock(1)) {
+    if(mutex.tryLock(1)) {
         do {
-            if (!ui->pbStartMeas->isChecked())
+            if(!ui->pbStartMeas->isChecked())
                 break;
-            if (counter == 0) {
+            if(counter == 0) {
                 currentPos = selected.begin()->first + 1;
                 ui->hsRelPos->setValue(currentPos < 30 ? currentPos : currentPos - 29);
 
-                if (currentPos > 29 && !sideMessageBox) {
+                if(currentPos > 29 && !sideMessageBox) {
                     sideMessageBox = true;
                     showMessage(Side_30_58);
                 }
 
-                if (!MI::rel->SetEnabledRelay(ui->hsRelPos->value())) {
+                if(!MI::rel->SetEnabledRelay(ui->hsRelPos->value())) {
                     on_pbStartMeas_clicked(false);
                     showMessage(ErrorRelaySwitch);
                 }
-            } else if (counter <= ui->sbxSkipMeas->value()) {
+            } else if(counter <= ui->sbxSkipMeas->value()) {
                 ui->tableView->SetData(currentPos - 1, val);
-            } else if (counter <= (ui->sbxSkipMeas->value() + ui->sbxMeasCount->value())) {
+            } else if(counter <= (ui->sbxSkipMeas->value() + ui->sbxMeasCount->value())) {
                 ui->tableView->AddData(currentPos - 1, val);
             } else {
                 selected.erase(selected.begin()->first);
                 counter = 0;
-                if (!selected.size()) {
+                if(!selected.size()) {
                     on_pbStartMeas_clicked(false);
                     showMessage(MeasureEnded);
                 }
                 break;
             }
             ++counter;
-        } while (0);
+        } while(0);
         mutex.unlock();
     }
 }
 
-void MainWindow::on_pbPing_clicked(bool checked)
-{
-    if (checked) {
+void MainWindow::on_pbPing_clicked(bool checked) {
+    if(checked) {
         do {
-            if (!MI::rel->ping(ui->cbxRelay->currentText())) {
+            if(!MI::rel->ping(ui->cbxPortRelay->currentText())) {
                 QMessageBox::warning(this, "Ping", "Relay");
                 break;
             }
-            if (!MI::scpi->ping(ui->cbxMt4080->currentText())) {
+            if(!MI::scpi->ping(ui->cbxPortMeter->currentText())) {
                 QMessageBox::warning(this, "Ping", "SCPI");
                 break;
             }
-            //            if (!MI::mt->Open(ui->cbxMt4080->currentText())) {
-            //                QMessageBox::warning(this, "Ping", "cbxMt4080");
+            //            if (!MI::mt->Open(ui->cbxPortMeter->currentText())) {
+            //                QMessageBox::warning(this, "Ping", "cbxPortMeter");
             //                break;
             //            }
             ui->pbPing->setText("Закончить опрос");
@@ -265,13 +258,13 @@ void MainWindow::on_pbPing_clicked(bool checked)
             semaphore.tryAcquire(semaphore.available());
             timerId = startTimer(100);
             return;
-        } while (0);
+        } while(0);
         ui->pbPing->setChecked(false);
     } else {
         //        MI::mt->Close();
         ui->pbPing->setText("Начать опрос");
         ui->pbPing->setIcon(start);
-        if (timerId) {
+        if(timerId) {
             killTimer(timerId);
             timerId = 0;
         }
@@ -280,8 +273,7 @@ void MainWindow::on_pbPing_clicked(bool checked)
 
 QElapsedTimer t;
 
-void MainWindow::display(double val)
-{
+void MainWindow::display(double val) {
     qDebug() << t.elapsed();
     ui->lineEdit_2->setValue(val);
     ui->lineEdit_2->setStyleSheet("QDoubleSpinBox{background-color:rgb(255, 128, 128)}");
@@ -289,11 +281,10 @@ void MainWindow::display(double val)
     semaphore.tryAcquire(semaphore.available());
 }
 
-void MainWindow::timerEvent(QTimerEvent* event)
-{
-    if (timerId == event->timerId()) {
+void MainWindow::timerEvent(QTimerEvent* event) {
+    if(timerId == event->timerId()) {
         static int ctr;
-        if (semaphore.available() == 0) {
+        if(semaphore.available() == 0) {
             ctr = 0;
             qDebug("timerEvent");
             startMeasure();
@@ -301,7 +292,7 @@ void MainWindow::timerEvent(QTimerEvent* event)
             semaphore.release();
         } else {
             constexpr int N = 100;
-            switch (++ctr) {
+            switch(++ctr) {
             case N + 0:
                 MI::scpi->Write("*CLS");
                 break;

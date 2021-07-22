@@ -8,17 +8,17 @@ QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = MT4080D_AUTO
+TARGET = MT4080D_AUTO_R
 TEMPLATE = app
 
 #CONFIG += c++17
 
 QMAKE_CXXFLAGS += /std:c++latest
 QMAKE_CXXFLAGS += /await
-DEFINES += __cpp_lib_coroutine
+#DEFINES += __cpp_lib_coroutine
 
 #include(../MT4080/mt4080.pri)
-include(../../MyProtokol/myprotokol.pri)
+include(../../../MyProtokol/myprotokol.pri)
 
 INCLUDEPATH += ../MT4080
 INCLUDEPATH += cppcoro-vs2019/include/cppcoro

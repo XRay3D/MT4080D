@@ -12,31 +12,35 @@ TARGET = MT4080D_AUTO
 TEMPLATE = app
 
 include(../MT4080/mt4080.pri)
-include(../../MyProtokol/myprotokol.pri)
+include(../XrProtokol/XrProtokol.pri)
+include(../CommonInterfaces/CommonInterfaces.pri)
 
-INCLUDEPATH += ../MT4080
+INCLUDEPATH += range-v3/include
+
+QMAKE_CXXFLAGS += /std:c++latest
 
 win32:RC_FILE = myapp.rc
 
 SOURCES += \
+    chekableTableView/header.cpp \
+    chekableTableView/model.cpp \
+    chekableTableView/tableview.cpp \
     main.cpp\
     mainwindow.cpp \
-    table.cpp \
     measuringinterface/interface.cpp \
-#    measuringinterface/myprotokol.cpp \
     measuringinterface/relay.cpp \
-    mymodel.cpp \
-    mytable.cpp
+#    mymodel.cpp \
+
 
 HEADERS  += \
+    chekableTableView/header.h \
+    chekableTableView/model.h \
+    chekableTableView/tableview.h \
     mainwindow.h \
-    table.h \
-    measuringinterface/common_interfaces.h \
     measuringinterface/interface.h \
-#    measuringinterface/myprotokol.h \
     measuringinterface/relay.h \
-    mymodel.h \
-    mytable.h
+#    mymodel.h \
+
 
 FORMS += mainwindow.ui
 

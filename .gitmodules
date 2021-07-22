@@ -1,3 +1,12 @@
 [submodule "MT4080D_AUTO_TRANS/pfr"]
 	path = MT4080D_AUTO_TRANS/pfr
 	url = https://github.com/boostorg/pfr.git
+[submodule "XrProtokol"]
+	path = XrProtokol
+	url = git@github.com:XRay3D/XrProtokol.git
+[submodule "CommonInterfaces"]
+	path = CommonInterfaces
+	url = git@github.com:XRay3D/CommonInterfaces.git
+[submodule "MT4080D_AUTO/range-v3"]
+	path = MT4080D_AUTO/range-v3
+	url = git@github.com:ericniebler/range-v3.git

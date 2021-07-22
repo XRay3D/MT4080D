@@ -13,15 +13,13 @@ public:
     void stateChanged(const UsedMap& enabled, int orientation);
     void setChData(double value, int row, int column);
     double getChData(int row, int column);
-    inline bool enabled(int row, int column) const
-    {
-        if (m_rowsEnabled.contains(row) && m_columnsEnabled.contains(column))
+    inline bool enabled(int row, int column) const {
+        if(m_rowsEnabled.contains(row) && m_columnsEnabled.contains(column))
             return m_rowsEnabled.at(row) && m_columnsEnabled.at(column);
         return false;
     }
-    inline bool enabled(const QModelIndex& index) const
-    {
-        if (m_rowsEnabled.contains(index.row()) && m_columnsEnabled.contains(index.column()))
+    inline bool enabled(const QModelIndex& index) const {
+        if(m_rowsEnabled.contains(index.row()) && m_columnsEnabled.contains(index.column()))
             return m_rowsEnabled.at(index.row()) && m_columnsEnabled.at(index.column());
         return false;
     }
@@ -46,7 +44,7 @@ private:
         Rows = 58,
     };
 
-    double m_data[Columns][Rows];
+    double m_data[Columns][Rows] {};
 
     UsedMap m_rowsEnabled;
     UsedMap m_columnsEnabled;

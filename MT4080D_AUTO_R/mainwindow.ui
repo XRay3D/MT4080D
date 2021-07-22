@@ -174,7 +174,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="cbxMt4080">
+        <widget class="QComboBox" name="cbxPortMeter">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -194,7 +194,7 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="cbxRelay">
+        <widget class="QComboBox" name="cbxPortRelay">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
